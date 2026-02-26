@@ -173,7 +173,7 @@ void zone_scan_fast_init(simd_backend_t backend) {
 #endif
 #if defined(SIMD_SSE42)
     case SIMD_SSE42:
-        scanner = scan_sse42;
+        scanner = scan_sse2;
         break;
 #endif
 #if defined(SIMD_AVX2)
@@ -183,7 +183,7 @@ void zone_scan_fast_init(simd_backend_t backend) {
 #endif
 #if defined(SIMD_AVX512)
     case SIMD_AVX512:
-        scanner = scan_avx512;
+        scanner = scan_avx2;
         break;
 #endif
 #if defined(SIMD_NEON)

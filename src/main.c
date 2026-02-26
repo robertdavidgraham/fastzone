@@ -158,7 +158,7 @@ unsigned parse_file(const char *filename) {
     gettimeofday(&start, NULL);
     uint64_t total_records = 0;
     
-    for (unsigned n=0; n<500; n++) {
+    for (unsigned n=0; n<5000; n++) {
         /*
          * Initialize the parsing
          */
@@ -235,8 +235,8 @@ int main(int argc, char *argv[]) {
      */
     //zone_atom_ttl_bench();
     //return 0;
-    zone_init(SIMD_NEON);
-    
+    zone_init(SIMD_AVX2);
+
     
     zone_types2_init();
     

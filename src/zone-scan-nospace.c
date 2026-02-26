@@ -160,7 +160,7 @@ scan_sse42(const char *data, size_t i, size_t maxlen_ignored)
                                          '(', ')', ';',
                                          0,0,0,0,0,0,0,0,0,0);
     const int needle_len = 6;
-    const int mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_LEAST_SIGNIFICANT;
+#define mode _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_LEAST_SIGNIFICANT
 
     for (;;) {
         __m128i hay = _mm_loadu_si128((const __m128i *)(const void *)(data + i));

@@ -467,16 +467,16 @@ void zone_atom_mask_init(int simd)
     case SIMD_SCALAR:classify=mask_scalar;break;
     case SIMD_SWAR:classify=mask_swar;break;
 #ifdef SIMD_SSE2
-    case SIMD_SSE2:zone_atom_mask=mask_sse2;break;
+    case SIMD_SSE2:classify=mask_sse2;break;
 #endif
 #ifdef SIMD_SSE42
-    case SIMD_SSE42:zone_atom_mask=mask_sse42;break;
+    case SIMD_SSE42:classify=mask_sse42;break;
 #endif
 #ifdef SIMD_AVX2
-    case SIMD_AVX2:zone_atom_mask=mask_avx2;break;
+    case SIMD_AVX2:classify=mask_avx2;break;
 #endif
 #ifdef SIMD_AVX512
-    case SIMD_AVX512:zone_atom_mask=mask_avx512;break;
+    case SIMD_AVX512:classify=mask_avx512;break;
 #endif
 #ifdef SIMD_NEON
     case SIMD_NEON:classify=mask_neon;break;

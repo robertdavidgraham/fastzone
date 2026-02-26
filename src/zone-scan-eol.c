@@ -91,7 +91,7 @@ scan_sse42(const char *data, size_t i, size_t len_ignored)
 
     const __m128i needle = _mm_set1_epi8('\n');
     const int needle_len = 1;
-    const int mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_LEAST_SIGNIFICANT;
+#define mode  _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_LEAST_SIGNIFICANT
 
     for (;;) {
         __m128i hay = _mm_loadu_si128((const __m128i *)(const void *)(data + i));

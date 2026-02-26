@@ -1,0 +1,527 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		11D53A8B2F505D7400361606 /* zone-atom-expire1.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A592F505D7400361606 /* zone-atom-expire1.c */; };
+		11D53A8C2F505D7400361606 /* zone-atom-svcparm.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A632F505D7400361606 /* zone-atom-svcparm.c */; };
+		11D53A8D2F505D7400361606 /* zone-parse-header2.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A6D2F505D7400361606 /* zone-parse-header2.c */; };
+		11D53A8E2F505D7400361606 /* zone-atom-name4.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A612F505D7400361606 /* zone-atom-name4.c */; };
+		11D53A8F2F505D7400361606 /* zone-atom-hex.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A5B2F505D7400361606 /* zone-atom-hex.c */; };
+		11D53A902F505D7400361606 /* zone-scan-name.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A822F505D7400361606 /* zone-scan-name.c */; };
+		11D53A912F505D7400361606 /* zone-parse-mask.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A702F505D7400361606 /* zone-parse-mask.c */; };
+		11D53A922F505D7400361606 /* zone-scan-label.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A812F505D7400361606 /* zone-scan-label.c */; };
+		11D53A932F505D7400361606 /* zone-atom-base64c.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A552F505D7400361606 /* zone-atom-base64c.c */; };
+		11D53A942F505D7400361606 /* zone-atom-base64a.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A532F505D7400361606 /* zone-atom-base64a.c */; };
+		11D53A952F505D7400361606 /* zone-atom-base64d.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A562F505D7400361606 /* zone-atom-base64d.c */; };
+		11D53A962F505D7400361606 /* zone-atom-n3hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A5F2F505D7400361606 /* zone-atom-n3hash.c */; };
+		11D53A972F505D7400361606 /* zone-scan-space.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A862F505D7400361606 /* zone-scan-space.c */; };
+		11D53A982F505D7400361606 /* zone-scan-esc.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A7E2F505D7400361606 /* zone-scan-esc.c */; };
+		11D53A992F505D7400361606 /* zone-scan-nospace.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A832F505D7400361606 /* zone-scan-nospace.c */; };
+		11D53A9A2F505D7400361606 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A472F505D7400361606 /* main.c */; };
+		11D53A9B2F505D7400361606 /* zone-qbench.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A782F505D7400361606 /* zone-qbench.c */; };
+		11D53A9C2F505D7400361606 /* util-pathname.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A4C2F505D7400361606 /* util-pathname.c */; };
+		11D53A9D2F505D7400361606 /* zone-scan-fast.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A7F2F505D7400361606 /* zone-scan-fast.c */; };
+		11D53A9E2F505D7400361606 /* zone-scan.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A7C2F505D7400361606 /* zone-scan.c */; };
+		11D53A9F2F505D7400361606 /* zone-parse-types1.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A752F505D7400361606 /* zone-parse-types1.c */; };
+		11D53AA02F505D7400361606 /* zone-atom-ipv4.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A5D2F505D7400361606 /* zone-atom-ipv4.c */; };
+		11D53AA12F505D7400361606 /* zone-atom-int.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A5C2F505D7400361606 /* zone-atom-int.c */; };
+		11D53AA22F505D7400361606 /* zone-parse-test.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A732F505D7400361606 /* zone-parse-test.c */; };
+		11D53AA32F505D7400361606 /* zone-scan-qtest.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A842F505D7400361606 /* zone-scan-qtest.c */; };
+		11D53AA42F505D7400361606 /* zone-atom.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A522F505D7400361606 /* zone-atom.c */; };
+		11D53AA52F505D7400361606 /* zone-atom-expire2.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A5A2F505D7400361606 /* zone-atom-expire2.c */; };
+		11D53AA62F505D7400361606 /* zone-atom-txt.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A652F505D7400361606 /* zone-atom-txt.c */; };
+		11D53AA72F505D7400361606 /* zone-atom-base64b.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A542F505D7400361606 /* zone-atom-base64b.c */; };
+		11D53AA82F505D7400361606 /* zone-atom-name5.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A622F505D7400361606 /* zone-atom-name5.c */; };
+		11D53AA92F505D7400361606 /* zone-atom-bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A572F505D7400361606 /* zone-atom-bitmap.c */; };
+		11D53AAA2F505D7400361606 /* zone-rrtype.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A7A2F505D7400361606 /* zone-rrtype.c */; };
+		11D53AAB2F505D7400361606 /* zone-parse-types2.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A762F505D7400361606 /* zone-parse-types2.c */; };
+		11D53AAC2F505D7400361606 /* zone-parse-header.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A6C2F505D7400361606 /* zone-parse-header.c */; };
+		11D53AAD2F505D7400361606 /* util-base64-b.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A492F505D7400361606 /* util-base64-b.c */; };
+		11D53AAE2F505D7400361606 /* zone.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A502F505D7400361606 /* zone.c */; };
+		11D53AAF2F505D7400361606 /* zone-atom-caaval.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A582F505D7400361606 /* zone-atom-caaval.c */; };
+		11D53AB02F505D7400361606 /* zone-error.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A692F505D7400361606 /* zone-error.c */; };
+		11D53AB12F505D7400361606 /* zone-scan-eol.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A7D2F505D7400361606 /* zone-scan-eol.c */; };
+		11D53AB22F505D7400361606 /* zone-scan-fast2.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A802F505D7400361606 /* zone-scan-fast2.c */; };
+		11D53AB32F505D7400361606 /* zone-scan-quote.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A852F505D7400361606 /* zone-scan-quote.c */; };
+		11D53AB42F505D7400361606 /* zone-atom-ttl.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A642F505D7400361606 /* zone-atom-ttl.c */; };
+		11D53AB52F505D7400361606 /* zone-token.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A882F505D7400361606 /* zone-token.c */; };
+		11D53AB62F505D7400361606 /* zone-atom-type2.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A672F505D7400361606 /* zone-atom-type2.c */; };
+		11D53AB72F505D7400361606 /* util-simd.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A4E2F505D7400361606 /* util-simd.c */; };
+		11D53AB82F505D7400361606 /* zone-atom-type1.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A662F505D7400361606 /* zone-atom-type1.c */; };
+		11D53AB92F505D7400361606 /* zone-atom-ipv6.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A5E2F505D7400361606 /* zone-atom-ipv6.c */; };
+		11D53ABA2F505D7400361606 /* zone-parse-record.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A722F505D7400361606 /* zone-parse-record.c */; };
+		11D53ABB2F505D7400361606 /* zone-workq.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A8A2F505D7400361606 /* zone-workq.c */; };
+		11D53ABC2F505D7400361606 /* zone-parse-header2-test.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A6E2F505D7400361606 /* zone-parse-header2-test.c */; };
+		11D53ABD2F505D7400361606 /* zone-file.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D53A6A2F505D7400361606 /* zone-file.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		11D53A3B2F505D4000361606 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		11D53A3D2F505D4000361606 /* fastzone */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fastzone; sourceTree = BUILT_PRODUCTS_DIR; };
+		11D53A472F505D7400361606 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../src/main.c; sourceTree = SOURCE_ROOT; };
+		11D53A482F505D7400361606 /* util-base64-b.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "util-base64-b.h"; path = "../src/util-base64-b.h"; sourceTree = SOURCE_ROOT; };
+		11D53A492F505D7400361606 /* util-base64-b.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "util-base64-b.c"; path = "../src/util-base64-b.c"; sourceTree = SOURCE_ROOT; };
+		11D53A4A2F505D7400361606 /* util-ctz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "util-ctz.h"; path = "../src/util-ctz.h"; sourceTree = SOURCE_ROOT; };
+		11D53A4B2F505D7400361606 /* util-pathname.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "util-pathname.h"; path = "../src/util-pathname.h"; sourceTree = SOURCE_ROOT; };
+		11D53A4C2F505D7400361606 /* util-pathname.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "util-pathname.c"; path = "../src/util-pathname.c"; sourceTree = SOURCE_ROOT; };
+		11D53A4D2F505D7400361606 /* util-simd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "util-simd.h"; path = "../src/util-simd.h"; sourceTree = SOURCE_ROOT; };
+		11D53A4E2F505D7400361606 /* util-simd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "util-simd.c"; path = "../src/util-simd.c"; sourceTree = SOURCE_ROOT; };
+		11D53A4F2F505D7400361606 /* zone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = zone.h; path = ../src/zone.h; sourceTree = SOURCE_ROOT; };
+		11D53A502F505D7400361606 /* zone.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = zone.c; path = ../src/zone.c; sourceTree = SOURCE_ROOT; };
+		11D53A512F505D7400361606 /* zone-atom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-atom.h"; path = "../src/zone-atom.h"; sourceTree = SOURCE_ROOT; };
+		11D53A522F505D7400361606 /* zone-atom.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom.c"; path = "../src/zone-atom.c"; sourceTree = SOURCE_ROOT; };
+		11D53A532F505D7400361606 /* zone-atom-base64a.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-base64a.c"; path = "../src/zone-atom-base64a.c"; sourceTree = SOURCE_ROOT; };
+		11D53A542F505D7400361606 /* zone-atom-base64b.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-base64b.c"; path = "../src/zone-atom-base64b.c"; sourceTree = SOURCE_ROOT; };
+		11D53A552F505D7400361606 /* zone-atom-base64c.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-base64c.c"; path = "../src/zone-atom-base64c.c"; sourceTree = SOURCE_ROOT; };
+		11D53A562F505D7400361606 /* zone-atom-base64d.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-base64d.c"; path = "../src/zone-atom-base64d.c"; sourceTree = SOURCE_ROOT; };
+		11D53A572F505D7400361606 /* zone-atom-bitmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-bitmap.c"; path = "../src/zone-atom-bitmap.c"; sourceTree = SOURCE_ROOT; };
+		11D53A582F505D7400361606 /* zone-atom-caaval.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-caaval.c"; path = "../src/zone-atom-caaval.c"; sourceTree = SOURCE_ROOT; };
+		11D53A592F505D7400361606 /* zone-atom-expire1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-expire1.c"; path = "../src/zone-atom-expire1.c"; sourceTree = SOURCE_ROOT; };
+		11D53A5A2F505D7400361606 /* zone-atom-expire2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-expire2.c"; path = "../src/zone-atom-expire2.c"; sourceTree = SOURCE_ROOT; };
+		11D53A5B2F505D7400361606 /* zone-atom-hex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-hex.c"; path = "../src/zone-atom-hex.c"; sourceTree = SOURCE_ROOT; };
+		11D53A5C2F505D7400361606 /* zone-atom-int.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-int.c"; path = "../src/zone-atom-int.c"; sourceTree = SOURCE_ROOT; };
+		11D53A5D2F505D7400361606 /* zone-atom-ipv4.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-ipv4.c"; path = "../src/zone-atom-ipv4.c"; sourceTree = SOURCE_ROOT; };
+		11D53A5E2F505D7400361606 /* zone-atom-ipv6.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-ipv6.c"; path = "../src/zone-atom-ipv6.c"; sourceTree = SOURCE_ROOT; };
+		11D53A5F2F505D7400361606 /* zone-atom-n3hash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-n3hash.c"; path = "../src/zone-atom-n3hash.c"; sourceTree = SOURCE_ROOT; };
+		11D53A602F505D7400361606 /* zone-atom-name.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-atom-name.h"; path = "../src/zone-atom-name.h"; sourceTree = SOURCE_ROOT; };
+		11D53A612F505D7400361606 /* zone-atom-name4.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-name4.c"; path = "../src/zone-atom-name4.c"; sourceTree = SOURCE_ROOT; };
+		11D53A622F505D7400361606 /* zone-atom-name5.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-name5.c"; path = "../src/zone-atom-name5.c"; sourceTree = SOURCE_ROOT; };
+		11D53A632F505D7400361606 /* zone-atom-svcparm.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-svcparm.c"; path = "../src/zone-atom-svcparm.c"; sourceTree = SOURCE_ROOT; };
+		11D53A642F505D7400361606 /* zone-atom-ttl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-ttl.c"; path = "../src/zone-atom-ttl.c"; sourceTree = SOURCE_ROOT; };
+		11D53A652F505D7400361606 /* zone-atom-txt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-txt.c"; path = "../src/zone-atom-txt.c"; sourceTree = SOURCE_ROOT; };
+		11D53A662F505D7400361606 /* zone-atom-type1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-type1.c"; path = "../src/zone-atom-type1.c"; sourceTree = SOURCE_ROOT; };
+		11D53A672F505D7400361606 /* zone-atom-type2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-type2.c"; path = "../src/zone-atom-type2.c"; sourceTree = SOURCE_ROOT; };
+		11D53A682F505D7400361606 /* zone-error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-error.h"; path = "../src/zone-error.h"; sourceTree = SOURCE_ROOT; };
+		11D53A692F505D7400361606 /* zone-error.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-error.c"; path = "../src/zone-error.c"; sourceTree = SOURCE_ROOT; };
+		11D53A6A2F505D7400361606 /* zone-file.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-file.c"; path = "../src/zone-file.c"; sourceTree = SOURCE_ROOT; };
+		11D53A6B2F505D7400361606 /* zone-parse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-parse.h"; path = "../src/zone-parse.h"; sourceTree = SOURCE_ROOT; };
+		11D53A6C2F505D7400361606 /* zone-parse-header.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-header.c"; path = "../src/zone-parse-header.c"; sourceTree = SOURCE_ROOT; };
+		11D53A6D2F505D7400361606 /* zone-parse-header2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-header2.c"; path = "../src/zone-parse-header2.c"; sourceTree = SOURCE_ROOT; };
+		11D53A6E2F505D7400361606 /* zone-parse-header2-test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-header2-test.c"; path = "../src/zone-parse-header2-test.c"; sourceTree = SOURCE_ROOT; };
+		11D53A6F2F505D7400361606 /* zone-parse-mask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-parse-mask.h"; path = "../src/zone-parse-mask.h"; sourceTree = SOURCE_ROOT; };
+		11D53A702F505D7400361606 /* zone-parse-mask.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-mask.c"; path = "../src/zone-parse-mask.c"; sourceTree = SOURCE_ROOT; };
+		11D53A712F505D7400361606 /* zone-parse-record.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-parse-record.h"; path = "../src/zone-parse-record.h"; sourceTree = SOURCE_ROOT; };
+		11D53A722F505D7400361606 /* zone-parse-record.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-record.c"; path = "../src/zone-parse-record.c"; sourceTree = SOURCE_ROOT; };
+		11D53A732F505D7400361606 /* zone-parse-test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-test.c"; path = "../src/zone-parse-test.c"; sourceTree = SOURCE_ROOT; };
+		11D53A742F505D7400361606 /* zone-parse-types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-parse-types.h"; path = "../src/zone-parse-types.h"; sourceTree = SOURCE_ROOT; };
+		11D53A752F505D7400361606 /* zone-parse-types1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-types1.c"; path = "../src/zone-parse-types1.c"; sourceTree = SOURCE_ROOT; };
+		11D53A762F505D7400361606 /* zone-parse-types2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-types2.c"; path = "../src/zone-parse-types2.c"; sourceTree = SOURCE_ROOT; };
+		11D53A772F505D7400361606 /* zone-qbench.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-qbench.h"; path = "../src/zone-qbench.h"; sourceTree = SOURCE_ROOT; };
+		11D53A782F505D7400361606 /* zone-qbench.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-qbench.c"; path = "../src/zone-qbench.c"; sourceTree = SOURCE_ROOT; };
+		11D53A792F505D7400361606 /* zone-rrtype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-rrtype.h"; path = "../src/zone-rrtype.h"; sourceTree = SOURCE_ROOT; };
+		11D53A7A2F505D7400361606 /* zone-rrtype.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-rrtype.c"; path = "../src/zone-rrtype.c"; sourceTree = SOURCE_ROOT; };
+		11D53A7B2F505D7400361606 /* zone-scan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-scan.h"; path = "../src/zone-scan.h"; sourceTree = SOURCE_ROOT; };
+		11D53A7C2F505D7400361606 /* zone-scan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan.c"; path = "../src/zone-scan.c"; sourceTree = SOURCE_ROOT; };
+		11D53A7D2F505D7400361606 /* zone-scan-eol.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-eol.c"; path = "../src/zone-scan-eol.c"; sourceTree = SOURCE_ROOT; };
+		11D53A7E2F505D7400361606 /* zone-scan-esc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-esc.c"; path = "../src/zone-scan-esc.c"; sourceTree = SOURCE_ROOT; };
+		11D53A7F2F505D7400361606 /* zone-scan-fast.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-fast.c"; path = "../src/zone-scan-fast.c"; sourceTree = SOURCE_ROOT; };
+		11D53A802F505D7400361606 /* zone-scan-fast2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-fast2.c"; path = "../src/zone-scan-fast2.c"; sourceTree = SOURCE_ROOT; };
+		11D53A812F505D7400361606 /* zone-scan-label.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-label.c"; path = "../src/zone-scan-label.c"; sourceTree = SOURCE_ROOT; };
+		11D53A822F505D7400361606 /* zone-scan-name.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-name.c"; path = "../src/zone-scan-name.c"; sourceTree = SOURCE_ROOT; };
+		11D53A832F505D7400361606 /* zone-scan-nospace.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-nospace.c"; path = "../src/zone-scan-nospace.c"; sourceTree = SOURCE_ROOT; };
+		11D53A842F505D7400361606 /* zone-scan-qtest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-qtest.c"; path = "../src/zone-scan-qtest.c"; sourceTree = SOURCE_ROOT; };
+		11D53A852F505D7400361606 /* zone-scan-quote.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-quote.c"; path = "../src/zone-scan-quote.c"; sourceTree = SOURCE_ROOT; };
+		11D53A862F505D7400361606 /* zone-scan-space.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-space.c"; path = "../src/zone-scan-space.c"; sourceTree = SOURCE_ROOT; };
+		11D53A872F505D7400361606 /* zone-token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-token.h"; path = "../src/zone-token.h"; sourceTree = SOURCE_ROOT; };
+		11D53A882F505D7400361606 /* zone-token.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-token.c"; path = "../src/zone-token.c"; sourceTree = SOURCE_ROOT; };
+		11D53A892F505D7400361606 /* zone-workq.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-workq.h"; path = "../src/zone-workq.h"; sourceTree = SOURCE_ROOT; };
+		11D53A8A2F505D7400361606 /* zone-workq.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-workq.c"; path = "../src/zone-workq.c"; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		11D53A3F2F505D4000361606 /* fastzone */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = fastzone;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		11D53A3A2F505D4000361606 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		11D53A342F505D4000361606 = {
+			isa = PBXGroup;
+			children = (
+				11D53A472F505D7400361606 /* main.c */,
+				11D53A482F505D7400361606 /* util-base64-b.h */,
+				11D53A492F505D7400361606 /* util-base64-b.c */,
+				11D53A4A2F505D7400361606 /* util-ctz.h */,
+				11D53A4B2F505D7400361606 /* util-pathname.h */,
+				11D53A4C2F505D7400361606 /* util-pathname.c */,
+				11D53A4D2F505D7400361606 /* util-simd.h */,
+				11D53A4E2F505D7400361606 /* util-simd.c */,
+				11D53A4F2F505D7400361606 /* zone.h */,
+				11D53A502F505D7400361606 /* zone.c */,
+				11D53A512F505D7400361606 /* zone-atom.h */,
+				11D53A522F505D7400361606 /* zone-atom.c */,
+				11D53A532F505D7400361606 /* zone-atom-base64a.c */,
+				11D53A542F505D7400361606 /* zone-atom-base64b.c */,
+				11D53A552F505D7400361606 /* zone-atom-base64c.c */,
+				11D53A562F505D7400361606 /* zone-atom-base64d.c */,
+				11D53A572F505D7400361606 /* zone-atom-bitmap.c */,
+				11D53A582F505D7400361606 /* zone-atom-caaval.c */,
+				11D53A592F505D7400361606 /* zone-atom-expire1.c */,
+				11D53A5A2F505D7400361606 /* zone-atom-expire2.c */,
+				11D53A5B2F505D7400361606 /* zone-atom-hex.c */,
+				11D53A5C2F505D7400361606 /* zone-atom-int.c */,
+				11D53A5D2F505D7400361606 /* zone-atom-ipv4.c */,
+				11D53A5E2F505D7400361606 /* zone-atom-ipv6.c */,
+				11D53A5F2F505D7400361606 /* zone-atom-n3hash.c */,
+				11D53A602F505D7400361606 /* zone-atom-name.h */,
+				11D53A612F505D7400361606 /* zone-atom-name4.c */,
+				11D53A622F505D7400361606 /* zone-atom-name5.c */,
+				11D53A632F505D7400361606 /* zone-atom-svcparm.c */,
+				11D53A642F505D7400361606 /* zone-atom-ttl.c */,
+				11D53A652F505D7400361606 /* zone-atom-txt.c */,
+				11D53A662F505D7400361606 /* zone-atom-type1.c */,
+				11D53A672F505D7400361606 /* zone-atom-type2.c */,
+				11D53A682F505D7400361606 /* zone-error.h */,
+				11D53A692F505D7400361606 /* zone-error.c */,
+				11D53A6A2F505D7400361606 /* zone-file.c */,
+				11D53A6B2F505D7400361606 /* zone-parse.h */,
+				11D53A6C2F505D7400361606 /* zone-parse-header.c */,
+				11D53A6D2F505D7400361606 /* zone-parse-header2.c */,
+				11D53A6E2F505D7400361606 /* zone-parse-header2-test.c */,
+				11D53A6F2F505D7400361606 /* zone-parse-mask.h */,
+				11D53A702F505D7400361606 /* zone-parse-mask.c */,
+				11D53A712F505D7400361606 /* zone-parse-record.h */,
+				11D53A722F505D7400361606 /* zone-parse-record.c */,
+				11D53A732F505D7400361606 /* zone-parse-test.c */,
+				11D53A742F505D7400361606 /* zone-parse-types.h */,
+				11D53A752F505D7400361606 /* zone-parse-types1.c */,
+				11D53A762F505D7400361606 /* zone-parse-types2.c */,
+				11D53A772F505D7400361606 /* zone-qbench.h */,
+				11D53A782F505D7400361606 /* zone-qbench.c */,
+				11D53A792F505D7400361606 /* zone-rrtype.h */,
+				11D53A7A2F505D7400361606 /* zone-rrtype.c */,
+				11D53A7B2F505D7400361606 /* zone-scan.h */,
+				11D53A7C2F505D7400361606 /* zone-scan.c */,
+				11D53A7D2F505D7400361606 /* zone-scan-eol.c */,
+				11D53A7E2F505D7400361606 /* zone-scan-esc.c */,
+				11D53A7F2F505D7400361606 /* zone-scan-fast.c */,
+				11D53A802F505D7400361606 /* zone-scan-fast2.c */,
+				11D53A812F505D7400361606 /* zone-scan-label.c */,
+				11D53A822F505D7400361606 /* zone-scan-name.c */,
+				11D53A832F505D7400361606 /* zone-scan-nospace.c */,
+				11D53A842F505D7400361606 /* zone-scan-qtest.c */,
+				11D53A852F505D7400361606 /* zone-scan-quote.c */,
+				11D53A862F505D7400361606 /* zone-scan-space.c */,
+				11D53A872F505D7400361606 /* zone-token.h */,
+				11D53A882F505D7400361606 /* zone-token.c */,
+				11D53A892F505D7400361606 /* zone-workq.h */,
+				11D53A8A2F505D7400361606 /* zone-workq.c */,
+				11D53A3F2F505D4000361606 /* fastzone */,
+				11D53A3E2F505D4000361606 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		11D53A3E2F505D4000361606 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				11D53A3D2F505D4000361606 /* fastzone */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		11D53A3C2F505D4000361606 /* fastzone */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 11D53A442F505D4000361606 /* Build configuration list for PBXNativeTarget "fastzone" */;
+			buildPhases = (
+				11D53A392F505D4000361606 /* Sources */,
+				11D53A3A2F505D4000361606 /* Frameworks */,
+				11D53A3B2F505D4000361606 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				11D53A3F2F505D4000361606 /* fastzone */,
+			);
+			name = fastzone;
+			packageProductDependencies = (
+			);
+			productName = fastzone;
+			productReference = 11D53A3D2F505D4000361606 /* fastzone */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		11D53A352F505D4000361606 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					11D53A3C2F505D4000361606 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+				};
+			};
+			buildConfigurationList = 11D53A382F505D4000361606 /* Build configuration list for PBXProject "fastzone" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 11D53A342F505D4000361606;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 11D53A3E2F505D4000361606 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				11D53A3C2F505D4000361606 /* fastzone */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		11D53A392F505D4000361606 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11D53A8B2F505D7400361606 /* zone-atom-expire1.c in Sources */,
+				11D53A8C2F505D7400361606 /* zone-atom-svcparm.c in Sources */,
+				11D53A8D2F505D7400361606 /* zone-parse-header2.c in Sources */,
+				11D53A8E2F505D7400361606 /* zone-atom-name4.c in Sources */,
+				11D53A8F2F505D7400361606 /* zone-atom-hex.c in Sources */,
+				11D53A902F505D7400361606 /* zone-scan-name.c in Sources */,
+				11D53A912F505D7400361606 /* zone-parse-mask.c in Sources */,
+				11D53A922F505D7400361606 /* zone-scan-label.c in Sources */,
+				11D53A932F505D7400361606 /* zone-atom-base64c.c in Sources */,
+				11D53A942F505D7400361606 /* zone-atom-base64a.c in Sources */,
+				11D53A952F505D7400361606 /* zone-atom-base64d.c in Sources */,
+				11D53A962F505D7400361606 /* zone-atom-n3hash.c in Sources */,
+				11D53A972F505D7400361606 /* zone-scan-space.c in Sources */,
+				11D53A982F505D7400361606 /* zone-scan-esc.c in Sources */,
+				11D53A992F505D7400361606 /* zone-scan-nospace.c in Sources */,
+				11D53A9A2F505D7400361606 /* main.c in Sources */,
+				11D53A9B2F505D7400361606 /* zone-qbench.c in Sources */,
+				11D53A9C2F505D7400361606 /* util-pathname.c in Sources */,
+				11D53A9D2F505D7400361606 /* zone-scan-fast.c in Sources */,
+				11D53A9E2F505D7400361606 /* zone-scan.c in Sources */,
+				11D53A9F2F505D7400361606 /* zone-parse-types1.c in Sources */,
+				11D53AA02F505D7400361606 /* zone-atom-ipv4.c in Sources */,
+				11D53AA12F505D7400361606 /* zone-atom-int.c in Sources */,
+				11D53AA22F505D7400361606 /* zone-parse-test.c in Sources */,
+				11D53AA32F505D7400361606 /* zone-scan-qtest.c in Sources */,
+				11D53AA42F505D7400361606 /* zone-atom.c in Sources */,
+				11D53AA52F505D7400361606 /* zone-atom-expire2.c in Sources */,
+				11D53AA62F505D7400361606 /* zone-atom-txt.c in Sources */,
+				11D53AA72F505D7400361606 /* zone-atom-base64b.c in Sources */,
+				11D53AA82F505D7400361606 /* zone-atom-name5.c in Sources */,
+				11D53AA92F505D7400361606 /* zone-atom-bitmap.c in Sources */,
+				11D53AAA2F505D7400361606 /* zone-rrtype.c in Sources */,
+				11D53AAB2F505D7400361606 /* zone-parse-types2.c in Sources */,
+				11D53AAC2F505D7400361606 /* zone-parse-header.c in Sources */,
+				11D53AAD2F505D7400361606 /* util-base64-b.c in Sources */,
+				11D53AAE2F505D7400361606 /* zone.c in Sources */,
+				11D53AAF2F505D7400361606 /* zone-atom-caaval.c in Sources */,
+				11D53AB02F505D7400361606 /* zone-error.c in Sources */,
+				11D53AB12F505D7400361606 /* zone-scan-eol.c in Sources */,
+				11D53AB22F505D7400361606 /* zone-scan-fast2.c in Sources */,
+				11D53AB32F505D7400361606 /* zone-scan-quote.c in Sources */,
+				11D53AB42F505D7400361606 /* zone-atom-ttl.c in Sources */,
+				11D53AB52F505D7400361606 /* zone-token.c in Sources */,
+				11D53AB62F505D7400361606 /* zone-atom-type2.c in Sources */,
+				11D53AB72F505D7400361606 /* util-simd.c in Sources */,
+				11D53AB82F505D7400361606 /* zone-atom-type1.c in Sources */,
+				11D53AB92F505D7400361606 /* zone-atom-ipv6.c in Sources */,
+				11D53ABA2F505D7400361606 /* zone-parse-record.c in Sources */,
+				11D53ABB2F505D7400361606 /* zone-workq.c in Sources */,
+				11D53ABC2F505D7400361606 /* zone-parse-header2-test.c in Sources */,
+				11D53ABD2F505D7400361606 /* zone-file.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		11D53A422F505D4000361606 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		11D53A432F505D4000361606 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		11D53A452F505D4000361606 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				"OTHER_CFLAGS[arch=*]" = "-march=skylake-avx512";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		11D53A462F505D4000361606 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				"OTHER_CFLAGS[arch=*]" = "-march=skylake-avx512";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		11D53A382F505D4000361606 /* Build configuration list for PBXProject "fastzone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11D53A422F505D4000361606 /* Debug */,
+				11D53A432F505D4000361606 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		11D53A442F505D4000361606 /* Build configuration list for PBXNativeTarget "fastzone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11D53A452F505D4000361606 /* Debug */,
+				11D53A462F505D4000361606 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 11D53A352F505D4000361606 /* Project object */;
+}

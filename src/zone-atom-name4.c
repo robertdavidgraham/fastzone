@@ -181,11 +181,11 @@ static uint32_t classify_sse2(const char *p, size_t max)
 
 #ifdef SIMD_SSE42
 #include <nmmintrin.h>
-static uint32_t classify_sse42(const char *p)
+static uint32_t classify_sse42(const char *p, size_t max)
 {
     /* Must use SSE4.2 text instruction (side-effect only). */
     const __m128i needle = _mm_setr_epi8('.', '-', '_', 0,0,0,0,0,0,0,0,0,0,0,0,0);
-    const int mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_LEAST_SIGNIFICANT;
+#define mode  _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_LEAST_SIGNIFICANT
     __m128i hay = _mm_loadu_si128((const __m128i *)(const void *)p);
     (void)_mm_cmpestri(needle, 3, hay, 16, mode);
 
@@ -203,7 +203,7 @@ static inline __m256i in_range_u8_avx2(__m256i x, unsigned char lo, unsigned cha
     __m256i hi_p1 = _mm256_set1_epi8((char)((unsigned char)(hi + 1) ^ 0x80));
     return _mm256_and_si256(_mm256_cmpgt_epi8(xx, lo_m1), _mm256_cmpgt_epi8(hi_p1, xx));
 }
-static uint32_t classify_avx2(const char *p)
+static uint32_t classify_avx2(const char *p, size_t max)
 {
     __m256i v = _mm256_loadu_si256((const __m256i *)(const void *)p);
 
@@ -221,7 +221,7 @@ static uint32_t classify_avx2(const char *p)
 
 #ifdef SIMD_AVX512
 #include <immintrin.h>
-static uint32_t classify_avx512(const char *p)
+static uint32_t classify_avx512(const char *p, size_t max)
 {
     __m512i v  = _mm512_loadu_si512((const void *)p);
     __m512i xx = _mm512_xor_si512(v, _mm512_set1_epi8((char)0x80));

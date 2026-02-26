@@ -186,7 +186,10 @@ scan_sse42(const char *data, size_t i, size_t maxlen_ignored)
 
     for (;;) {
         __m128i hay = _mm_loadu_si128((const __m128i *)(const void *)(data + i));
-        int idx = _mm_cmpestri(needle, needle_len, hay, 16, mode);
+        int idx = _mm_cmpestri(needle, needle_len, hay, 16, _SIDD_UBYTE_OPS |
+                               _SIDD_CMP_EQUAL_ANY |
+                               _SIDD_NEGATIVE_POLARITY |     // invert match: find first NOT in needle
+                               _SIDD_LEAST_SIGNIFICANT);
         if (idx != 16)
             return i + (size_t)idx;
         i += 16;
