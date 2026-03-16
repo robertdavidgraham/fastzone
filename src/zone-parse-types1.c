@@ -104,7 +104,7 @@ zone_parse_DS(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: 3D2D... (hex) */
-    cursor = zone_atom_hexes(data, cursor, max, out, depth);    /* digest */
+    cursor = zone_atom_hexes_b(data, cursor, max, out, depth);    /* digest */
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     //printf("%.*s\n", (unsigned)(cursor - start), data + start);
@@ -298,7 +298,7 @@ zone_parse_SSHFP(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: 1234ABCD... (hex) */
-    cursor = zone_atom_hex_c(data, cursor, max, out);    /* fingerprint */
+    cursor = zone_atom_hexc_a(data, cursor, max, out);    /* fingerprint */
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     
@@ -344,7 +344,7 @@ zone_parse_TLSA(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: 5A5B... (hex) */
-    cursor = zone_atom_hex_c(data, cursor, max, out);    /* certificate association data */
+    cursor = zone_atom_hexc_a(data, cursor, max, out);    /* certificate association data */
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     

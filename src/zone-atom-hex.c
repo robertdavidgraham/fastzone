@@ -242,7 +242,7 @@ hex_decode_core(const char *data, size_t cursor, size_t max)
 /* -------------------------------------------------------------------------- */
 
 size_t
-zone_atom_hex_l(const char *data, size_t cursor, size_t max,
+zone_atom_hexl_a(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out)
 {
     struct hex_decode_result r = hex_decode_core(data, cursor, max);
@@ -268,7 +268,7 @@ zone_atom_hex_l(const char *data, size_t cursor, size_t max,
 /* -------------------------------------------------------------------------- */
 
 size_t
-zone_atom_hex_c(const char *data, size_t cursor, size_t max,
+zone_atom_hexc_a(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out)
 {
     struct hex_decode_result r = hex_decode_core(data, cursor, max);
@@ -290,7 +290,7 @@ zone_atom_hex_c(const char *data, size_t cursor, size_t max,
 
 
 size_t
-zone_atom_hexes(const char *data, size_t cursor, size_t max,
+zone_atom_hexes_a(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out, unsigned *depth)
 {
     if (cursor >= max)
@@ -363,7 +363,7 @@ zone_atom_hexes(const char *data, size_t cursor, size_t max,
 }
 
 size_t
-zone_atom_hexes_c(const char *data, size_t cursor, size_t max,
+zone_atom_hexels_a(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out, unsigned *depth) {
    
     /*
@@ -375,7 +375,7 @@ zone_atom_hexes_c(const char *data, size_t cursor, size_t max,
     /*
      * Do the parsinging
      */
-    size_t next = zone_atom_hexes(data, cursor, max, out, depth);
+    size_t next = zone_atom_hexes_a(data, cursor, max, out, depth);
     
     /*
      * Write the length byte

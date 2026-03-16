@@ -158,7 +158,7 @@ unsigned parse_file(const char *filename) {
     gettimeofday(&start, NULL);
     uint64_t total_records = 0;
     
-    for (unsigned n=0; n<5000; n++) {
+    for (unsigned n=0; n<1000; n++) {
         /*
          * Initialize the parsing
          */
@@ -224,8 +224,6 @@ unsigned parse_file(const char *filename) {
     return 0;
 }
 
-extern void
-zone_types2_init(void);
 
 extern void zone_atom_ttl_bench(void);
 int main(int argc, char *argv[]) {
@@ -233,13 +231,14 @@ int main(int argc, char *argv[]) {
      * WARNING: don't start reading the code here, read the
      * README.md file first.
      */
-    //zone_atom_ttl_bench();
-    //return 0;
-    zone_init(SIMD_AVX2);
 
-    
-    zone_types2_init();
-    
+    /*
+     * Must be called beore anything. Things won't work if not
+     * initialized.
+     */
+    zone_init(SIMD_NEON);
+
+     
     int err = 0;
     //err += zone_parse_header2_quicktest();
     err += zone_atom_quicktest();
@@ -251,7 +250,7 @@ int main(int argc, char *argv[]) {
     if (argc > 1) {
         parse_file(argv[1]);
     } else {
-        parse_file("rrsig.se.zone");
+        parse_file("ns.se.zone");
     }
                    
     return 0;

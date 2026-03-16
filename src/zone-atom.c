@@ -135,9 +135,9 @@ zone_parse_space(const char *data, size_t cursor, size_t max,
 int zone_atom_quicktest(void) {
     int err = 0;
     
-    
+    err += zone_atom_hexb_selftest();
     //err += zone_atom_base64a_quicktest();
-    //err += zone_atom_base64b_quicktest();
+    err += zone_atom_base64b_quicktest();
     err += zone_atom_base64c_quicktest();
     err += zone_atom_base64d_quicktest();
     err += zone_atom_name5_quicktest();
@@ -156,9 +156,11 @@ int zone_atom_quicktest(void) {
 extern void zone_atom_base64c_init(int backend);
 extern void zone_atom_base64d_init(int backend);
 extern void zone_atom_expire2_init(int backend);
+extern void zone_types2_init(void);
 
 void
 zone_atom_init(int backend) {
+    zone_types2_init();
     zone_atom_base64c_init(backend);
     zone_atom_base64d_init(backend);
     zone_atom_expire2_init(backend);

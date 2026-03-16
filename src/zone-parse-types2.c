@@ -72,7 +72,7 @@ zone_parse_GENERIC(const char *data, size_t cursor, size_t max,
     /*
      * Get the hex encoding of the wire rrdata format.
      */
-    cursor = zone_atom_hexes(data, cursor, max, out, depth);
+    cursor = zone_atom_hexes_a(data, cursor, max, out, depth);
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     
@@ -167,7 +167,7 @@ zone_parse_NSEC(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: A NS SOA MX RRSIG NSEC DNSKEY (type bitmap, may wrap lines) */
-    cursor = zone_atom_bitmap(data, cursor, max, out, depth); /* remainder */
+    cursor = zone_atom_typelist_a(data, cursor, max, out, depth); /* remainder */
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     
@@ -215,7 +215,7 @@ zone_parse_NSEC3(const char *data, size_t cursor, size_t max,
         cursor++;
         wire_append_uint8(out, 0);
     } else {
-        cursor = zone_atom_hex_l(data, cursor, max, out);       /* salt bytes (supports '-') */
+        cursor = zone_atom_hexl_a(data, cursor, max, out);       /* salt bytes (supports '-') */
     }
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
@@ -224,7 +224,7 @@ zone_parse_NSEC3(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: A NS SOA MX RRSIG NSEC3PARAM (type bitmap, may wrap) */
-    cursor = zone_atom_bitmap(data, cursor, max, out, depth); /* remainder */
+    cursor = zone_atom_typelist_a(data, cursor, max, out, depth); /* remainder */
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     
@@ -309,7 +309,7 @@ zone_parse_ZONEMD(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: hex digest (may be split with whitespace) */
-    cursor = zone_atom_hexes(data, cursor, max, out, depth); /* digest (remainder-ish) */
+    cursor = zone_atom_hexes_a(data, cursor, max, out, depth); /* digest (remainder-ish) */
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     
@@ -361,7 +361,7 @@ zone_parse_SMIMEA(const char *data, size_t cursor, size_t max,
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     /* typical: hex cert association data (may be split) */
-    cursor = zone_atom_hexes(data, cursor, max, out, depth);
+    cursor = zone_atom_hexes_a(data, cursor, max, out, depth);
     cursor = zone_parse_space(data, cursor, max, out, depth);
 
     

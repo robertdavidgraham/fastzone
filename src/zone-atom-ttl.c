@@ -1,7 +1,7 @@
 #include "zone-parse.h"
 #include "zone-parse-record.h"
 #include "zone-error.h"
-
+#include "util-parseint.h"
 
 static inline char to_lower(char c) {
   if (c >= 'A' && c <= 'Z')

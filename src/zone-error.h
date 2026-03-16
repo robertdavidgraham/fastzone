@@ -25,6 +25,7 @@ enum zone_error {
     ZONE_ERROR_ESCAPE_BAD, /* \DDD incorrect */
     ZONE_ERROR_TEXT_MISSING_QUOTES, /* end string quotes not found */
     ZONE_ERROR_TEXT_LONG, /* string too long */
+    ZONE_ERROR_BUFOVERFLOW,
     ZONE_ERROR_MAX,
 };
 

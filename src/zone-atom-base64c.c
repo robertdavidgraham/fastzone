@@ -1,6 +1,7 @@
 #include "zone-parse.h"
 #include "zone-atom.h"
 #include "util-simd.h"
+#include "util-base64.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -15,16 +16,13 @@
 /*
  * This is the slow function we'll call if we can't load the library
  */
-static size_t tb64dec_default(const char *in, size_t inlen, unsigned char *out) {
-  
-    unsigned depth = 0;
-    struct wire_record_t out2 = {0};
-    out2.wire.buf = out;
-    out2.wire.max = 1000;
-    
-    
-    zone_atom_base64c(in, 0, inlen, &out2, &depth);
-    return out2.wire.len;
+static size_t tb64dec_default(const char *src, size_t inlen, unsigned char *out) {
+    size_t outlen = 0;
+    int is_good = base64_decode(src, inlen, out, &outlen);
+    if (is_good && outlen)
+        return outlen;
+    else
+        return 0;
 }
 
 /*
@@ -42,56 +40,44 @@ static char *(*cpustr)(unsigned cpuisa);
 #  include <intrin.h>
 #endif
 
-
-/* ---- BASE64 validity ----
- * BASE64 chars: A-Z a-z 0-9 + / and padding '='
- */
-static inline int is_b64_u8(uint8_t c) {
-    return ((c >= (uint8_t)'A' && c <= (uint8_t)'Z') ||
-            (c >= (uint8_t)'a' && c <= (uint8_t)'z') ||
-            (c >= (uint8_t)'0' && c <= (uint8_t)'9') ||
-            c == (uint8_t)'+' || c == (uint8_t)'/' || c == (uint8_t)'=');
+static inline int is_ws4(uint8_t c) {
+    return (c == (uint8_t)' '  ||
+            c == (uint8_t)'\t' ||
+            c == (uint8_t)'\r' ||
+            c == (uint8_t)'\n');
 }
 
-
-/* ---------------- Scalar scanner ---------------- */
 static size_t scan_scalar(const char *p)
 {
     const uint8_t *s = (const uint8_t *)(const void *)p;
     size_t i = 0;
-
-    /* Overread-safe by contract. */
     for (;;) {
-        if (!is_b64_u8(s[i])) return i;
+        if (is_ws4(s[i])) return i;
         i++;
     }
 }
-/* Scanner signature: returns number of consecutive BASE64 chars from p forward. */
-typedef size_t (*scan_nobase_fn)(const char *p);
-static scan_nobase_fn scanner = scan_scalar;
 
-
-/* ---------------- SWAR scanner (lightweight) ----------------
- * This is a simple 8-byte chunked scanner; still branch-light, but not fancy.
- */
 static size_t scan_swar(const char *p)
 {
     const uint8_t *s = (const uint8_t *)(const void *)p;
     size_t i = 0;
-
     for (;;) {
-        /* Unroll 8 bytes per iteration. */
-        if (!is_b64_u8(s[i+0])) return i+0;
-        if (!is_b64_u8(s[i+1])) return i+1;
-        if (!is_b64_u8(s[i+2])) return i+2;
-        if (!is_b64_u8(s[i+3])) return i+3;
-        if (!is_b64_u8(s[i+4])) return i+4;
-        if (!is_b64_u8(s[i+5])) return i+5;
-        if (!is_b64_u8(s[i+6])) return i+6;
-        if (!is_b64_u8(s[i+7])) return i+7;
+        if (is_ws4(s[i+0])) return i+0;
+        if (is_ws4(s[i+1])) return i+1;
+        if (is_ws4(s[i+2])) return i+2;
+        if (is_ws4(s[i+3])) return i+3;
+        if (is_ws4(s[i+4])) return i+4;
+        if (is_ws4(s[i+5])) return i+5;
+        if (is_ws4(s[i+6])) return i+6;
+        if (is_ws4(s[i+7])) return i+7;
         i += 8;
     }
-}
+}/* Scanner signature: returns number of consecutive BASE64 chars from p forward. */
+typedef size_t (*scan_nobase_fn)(const char *p);
+static scan_nobase_fn scanner = scan_scalar;
+
+
+
 
 #if defined(SIMD_SSE2) || defined(SIMD_SSE42) || defined(SIMD_AVX2) || defined(SIMD_AVX512)
 #  include <immintrin.h>
@@ -100,46 +86,28 @@ static size_t scan_swar(const char *p)
 /* ---- SSE2 helpers (unsigned range check) ---- */
 #if defined(SIMD_SSE2) || defined(SIMD_SSE42)
 
-static inline __m128i u8_in_range_sse2(__m128i v, uint8_t lo, uint8_t hi)
-{
-    const __m128i vlo = _mm_set1_epi8((char)lo);
-    const __m128i vhi = _mm_set1_epi8((char)hi);
-
-    /* ge = (max(v, lo) == v)  for unsigned bytes */
-    const __m128i ge = _mm_cmpeq_epi8(_mm_max_epu8(v, vlo), v);
-    /* le = (min(v, hi) == v) */
-    const __m128i le = _mm_cmpeq_epi8(_mm_min_epu8(v, vhi), v);
-
-    return _mm_and_si128(ge, le); /* 0xFF where in range */
-}
-
 static size_t scan_sse2_impl(const char *p)
 {
     const uint8_t *s = (const uint8_t *)(const void *)p;
     size_t off = 0;
 
-    const __m128i vplus  = _mm_set1_epi8('+');
-    const __m128i vslash = _mm_set1_epi8('/');
-    const __m128i veq    = _mm_set1_epi8('=');
-    const __m128i vzero  = _mm_setzero_si128();
+    const __m128i vsp  = _mm_set1_epi8(' ');
+    const __m128i vtab = _mm_set1_epi8('\t');
+    const __m128i vcr  = _mm_set1_epi8('\r');
+    const __m128i vnl  = _mm_set1_epi8('\n');
 
     for (;;) {
         const __m128i v = _mm_loadu_si128((const __m128i *)(const void *)(s + off));
 
-        __m128i m = u8_in_range_sse2(v, (uint8_t)'A', (uint8_t)'Z');
-        m = _mm_or_si128(m, u8_in_range_sse2(v, (uint8_t)'a', (uint8_t)'z'));
-        m = _mm_or_si128(m, u8_in_range_sse2(v, (uint8_t)'0', (uint8_t)'9'));
-        m = _mm_or_si128(m, _mm_cmpeq_epi8(v, vplus));
-        m = _mm_or_si128(m, _mm_cmpeq_epi8(v, vslash));
-        m = _mm_or_si128(m, _mm_cmpeq_epi8(v, veq));
+        __m128i m = _mm_cmpeq_epi8(v, vsp);
+        m = _mm_or_si128(m, _mm_cmpeq_epi8(v, vtab));
+        m = _mm_or_si128(m, _mm_cmpeq_epi8(v, vcr));
+        m = _mm_or_si128(m, _mm_cmpeq_epi8(v, vnl));
 
-        /* invalid bytes are those with m == 0 */
-        const __m128i invbytes = _mm_cmpeq_epi8(m, vzero);
-        const unsigned invmask = (unsigned)_mm_movemask_epi8(invbytes);
+        /* movemask has 1s where whitespace matched */
+        const unsigned wmask = (unsigned)_mm_movemask_epi8(m);
+        if (wmask) return off + (size_t)ctz32(wmask);
 
-        if (invmask) {
-            return off + (size_t)ctz32(invmask);
-        }
         off += 16;
     }
 }
@@ -152,84 +120,56 @@ static size_t scan_sse42(const char *p) { return scan_sse2_impl(p); }
 /* ---- AVX2 ---- */
 #if defined(SIMD_AVX2)
 
-static inline __m256i u8_in_range_avx2(__m256i v, uint8_t lo, uint8_t hi)
-{
-    const __m256i vlo = _mm256_set1_epi8((char)lo);
-    const __m256i vhi = _mm256_set1_epi8((char)hi);
-
-    const __m256i ge = _mm256_cmpeq_epi8(_mm256_max_epu8(v, vlo), v);
-    const __m256i le = _mm256_cmpeq_epi8(_mm256_min_epu8(v, vhi), v);
-    return _mm256_and_si256(ge, le);
-}
-
 static size_t scan_avx2(const char *p)
 {
     const uint8_t *s = (const uint8_t *)(const void *)p;
     size_t off = 0;
 
-    const __m256i vplus  = _mm256_set1_epi8('+');
-    const __m256i vslash = _mm256_set1_epi8('/');
-    const __m256i veq    = _mm256_set1_epi8('=');
-    const __m256i vzero  = _mm256_setzero_si256();
+    const __m256i vsp  = _mm256_set1_epi8(' ');
+    const __m256i vtab = _mm256_set1_epi8('\t');
+    const __m256i vcr  = _mm256_set1_epi8('\r');
+    const __m256i vnl  = _mm256_set1_epi8('\n');
 
     for (;;) {
         const __m256i v = _mm256_loadu_si256((const __m256i *)(const void *)(s + off));
 
-        __m256i m = u8_in_range_avx2(v, (uint8_t)'A', (uint8_t)'Z');
-        m = _mm256_or_si256(m, u8_in_range_avx2(v, (uint8_t)'a', (uint8_t)'z'));
-        m = _mm256_or_si256(m, u8_in_range_avx2(v, (uint8_t)'0', (uint8_t)'9'));
-        m = _mm256_or_si256(m, _mm256_cmpeq_epi8(v, vplus));
-        m = _mm256_or_si256(m, _mm256_cmpeq_epi8(v, vslash));
-        m = _mm256_or_si256(m, _mm256_cmpeq_epi8(v, veq));
+        __m256i m = _mm256_cmpeq_epi8(v, vsp);
+        m = _mm256_or_si256(m, _mm256_cmpeq_epi8(v, vtab));
+        m = _mm256_or_si256(m, _mm256_cmpeq_epi8(v, vcr));
+        m = _mm256_or_si256(m, _mm256_cmpeq_epi8(v, vnl));
 
-        const __m256i invbytes = _mm256_cmpeq_epi8(m, vzero);
-        const unsigned invmask = (unsigned)_mm256_movemask_epi8(invbytes);
+        const unsigned wmask = (unsigned)_mm256_movemask_epi8(m);
+        if (wmask) return off + (size_t)ctz32(wmask);
 
-        if (invmask) {
-            return off + (size_t)ctz32(invmask);
-        }
         off += 32;
     }
 }
-
 #endif /* SIMD_AVX2 */
 
 /* ---- AVX-512 ---- */
 #if defined(SIMD_AVX512)
 
-static inline __mmask64 u8_in_range_avx512(__m512i v, uint8_t lo, uint8_t hi)
-{
-    /* unsigned compares are available as mask ops */
-    const __m512i vlo = _mm512_set1_epi8((char)lo);
-    const __m512i vhi = _mm512_set1_epi8((char)hi);
-    const __mmask64 ge = _mm512_cmp_epu8_mask(v, vlo, _MM_CMPINT_GE);
-    const __mmask64 le = _mm512_cmp_epu8_mask(v, vhi, _MM_CMPINT_LE);
-    return (ge & le);
-}
 
 static size_t scan_avx512(const char *p)
 {
     const uint8_t *s = (const uint8_t *)(const void *)p;
     size_t off = 0;
 
-    const __m512i vplus  = _mm512_set1_epi8('+');
-    const __m512i vslash = _mm512_set1_epi8('/');
-    const __m512i veq    = _mm512_set1_epi8('=');
+    const __m512i vsp  = _mm512_set1_epi8(' ');
+    const __m512i vtab = _mm512_set1_epi8('\t');
+    const __m512i vcr  = _mm512_set1_epi8('\r');
+    const __m512i vnl  = _mm512_set1_epi8('\n');
 
     for (;;) {
         const __m512i v = _mm512_loadu_si512((const void *)(s + off));
 
-        __mmask64 ok = u8_in_range_avx512(v, (uint8_t)'A', (uint8_t)'Z');
-        ok |= u8_in_range_avx512(v, (uint8_t)'a', (uint8_t)'z');
-        ok |= u8_in_range_avx512(v, (uint8_t)'0', (uint8_t)'9');
-        ok |= _mm512_cmpeq_epi8_mask(v, vplus);
-        ok |= _mm512_cmpeq_epi8_mask(v, vslash);
-        ok |= _mm512_cmpeq_epi8_mask(v, veq);
+        __mmask64 m = _mm512_cmpeq_epi8_mask(v, vsp);
+        m |= _mm512_cmpeq_epi8_mask(v, vtab);
+        m |= _mm512_cmpeq_epi8_mask(v, vcr);
+        m |= _mm512_cmpeq_epi8_mask(v, vnl);
 
-        const __mmask64 bad = ~ok; /* bits set where invalid */
-        if (bad) {
-            return off + (size_t)ctz64((uint64_t)bad);
-        }
+        if (m) return off + (size_t)ctz64((uint64_t)m);
+
         off += 64;
     }
 }
@@ -242,10 +182,10 @@ static size_t scan_avx512(const char *p)
 
 /* ---- NEON (AArch64) ---- */
 #if defined(SIMD_NEON)
+#  include <arm_neon.h>
 
 static inline uint32_t neon_movemask_u8(uint8x16_t vff00)
 {
-    /* vff00 has 0xFF in lanes of interest. Return 16-bit mask in low bits. */
     uint8x16_t b = vshrq_n_u8(vff00, 7);
     const int8x8_t shifts = (int8x8_t){0,1,2,3,4,5,6,7};
     uint8x8_t lo = vshl_u8(vget_low_u8(b), shifts);
@@ -253,41 +193,27 @@ static inline uint32_t neon_movemask_u8(uint8x16_t vff00)
     return (uint32_t)vaddv_u8(lo) | ((uint32_t)vaddv_u8(hi) << 8);
 }
 
-static inline uint8x16_t neon_in_range(uint8x16_t v, uint8_t lo, uint8_t hi)
-{
-    const uint8x16_t vlo = vdupq_n_u8(lo);
-    const uint8x16_t vhi = vdupq_n_u8(hi);
-    const uint8x16_t ge = vcgeq_u8(v, vlo);
-    const uint8x16_t le = vcleq_u8(v, vhi);
-    return vandq_u8(ge, le); /* 0xFF where ok */
-}
-
 static size_t scan_neon(const char *p)
 {
     const uint8_t *s = (const uint8_t *)(const void *)p;
     size_t off = 0;
 
-    const uint8x16_t vplus  = vdupq_n_u8((uint8_t)'+');
-    const uint8x16_t vslash = vdupq_n_u8((uint8_t)'/');
-    const uint8x16_t veq    = vdupq_n_u8((uint8_t)'=');
+    const uint8x16_t vsp  = vdupq_n_u8((uint8_t)' ');
+    const uint8x16_t vtab = vdupq_n_u8((uint8_t)'\t');
+    const uint8x16_t vcr  = vdupq_n_u8((uint8_t)'\r');
+    const uint8x16_t vnl  = vdupq_n_u8((uint8_t)'\n');
 
     for (;;) {
         const uint8x16_t v = vld1q_u8(s + off);
 
-        uint8x16_t ok = neon_in_range(v, (uint8_t)'A', (uint8_t)'Z');
-        ok = vorrq_u8(ok, neon_in_range(v, (uint8_t)'a', (uint8_t)'z'));
-        ok = vorrq_u8(ok, neon_in_range(v, (uint8_t)'0', (uint8_t)'9'));
-        ok = vorrq_u8(ok, vceqq_u8(v, vplus));
-        ok = vorrq_u8(ok, vceqq_u8(v, vslash));
-        ok = vorrq_u8(ok, vceqq_u8(v, veq));
+        uint8x16_t m = vceqq_u8(v, vsp);
+        m = vorrq_u8(m, vceqq_u8(v, vtab));
+        m = vorrq_u8(m, vceqq_u8(v, vcr));
+        m = vorrq_u8(m, vceqq_u8(v, vnl));
 
-        /* invalid lanes => ok == 0; make mask of invalid */
-        const uint8x16_t bad = vceqq_u8(ok, vdupq_n_u8(0));
-        const uint32_t badmask = neon_movemask_u8(bad);
+        const uint32_t wmask = neon_movemask_u8(m);
+        if (wmask) return off + (size_t)ctz32(wmask);
 
-        if (badmask) {
-            return off + (size_t)ctz32(badmask);
-        }
         off += 16;
     }
 }
@@ -307,52 +233,31 @@ static size_t scan_sve2(const char *p)
         svbool_t pg = svptrue_b8();
         svuint8_t v = svld1_u8(pg, s + off);
 
-        /* Build valid predicate (byte-wise). */
-        svbool_t ok = svand_b_z(pg,
-            svcmpge_u8(pg, v, svdup_u8((uint8_t)'A')),
-            svcmple_u8(pg, v, svdup_u8((uint8_t)'Z')));
+        svbool_t m = svcmpeq_u8(pg, v, svdup_u8((uint8_t)' '));
+        m = svorr_b_z(pg, m, svcmpeq_u8(pg, v, svdup_u8((uint8_t)'\t')));
+        m = svorr_b_z(pg, m, svcmpeq_u8(pg, v, svdup_u8((uint8_t)'\r')));
+        m = svorr_b_z(pg, m, svcmpeq_u8(pg, v, svdup_u8((uint8_t)'\n')));
 
-        svbool_t t;
-
-        t = svand_b_z(pg,
-            svcmpge_u8(pg, v, svdup_u8((uint8_t)'a')),
-            svcmple_u8(pg, v, svdup_u8((uint8_t)'z')));
-        ok = svorr_b_z(pg, ok, t);
-
-        t = svand_b_z(pg,
-            svcmpge_u8(pg, v, svdup_u8((uint8_t)'0')),
-            svcmple_u8(pg, v, svdup_u8((uint8_t)'9')));
-        ok = svorr_b_z(pg, ok, t);
-
-        ok = svorr_b_z(pg, ok, svcmpeq_u8(pg, v, svdup_u8((uint8_t)'+')));
-        ok = svorr_b_z(pg, ok, svcmpeq_u8(pg, v, svdup_u8((uint8_t)'/')));
-        ok = svorr_b_z(pg, ok, svcmpeq_u8(pg, v, svdup_u8((uint8_t)'=')));
-
-        svbool_t bad = svnot_b_z(pg, ok);
-
-        if (svptest_any(pg, bad)) {
-            /* Store and find exact index (still fast enough, and correct). */
+        if (svptest_any(pg, m)) {
+            /* Find first whitespace lane. */
             const size_t vl = svcntb();
-            uint8_t tmp[256];
-            /* vl can exceed 256 on some targets, but SVE2 in practice is bounded;
-               if you want strict, replace with alloca(vl). */
-            if (vl > sizeof(tmp)) {
-                /* fallback if some huge VL */
-                return off + scan_scalar((const char *)(const void *)(s + off));
-            }
+            /* Prefer alloca for arbitrary VL. */
+#if defined(_MSC_VER)
+            uint8_t *tmp = (uint8_t *)_alloca(vl);
+#else
+            uint8_t *tmp = (uint8_t *)__builtin_alloca(vl);
+#endif
             svst1_u8(pg, tmp, v);
             for (size_t i = 0; i < vl; i++) {
-                if (!is_b64_u8(tmp[i])) return off + i;
+                if (is_ws4(tmp[i])) return off + i;
             }
-            /* should not happen, but be safe */
-            off += vl;
-        } else {
-            off += svcntb();
         }
+
+        off += svcntb();
     }
 }
 
-#endif /* SIMD_SVE2 */
+#endif
 
 /* ---- RISC-V V: placeholder scalar-chunk fallback under SIMD_RISCVV ---- */
 #if defined(SIMD_RISCVV)
@@ -366,7 +271,7 @@ static size_t scan_riscvv(const char *p)
 
 /* ---------------- Runtime backend selection ---------------- */
 
-void zone_scan_nobase_init(simd_backend_t backend)
+static void zone_scan_nobase_init(simd_backend_t backend)
 {
     switch (backend) {
     case SIMD_AUTO:
@@ -421,6 +326,21 @@ void zone_scan_nobase_init(simd_backend_t backend)
     if (!scanner) scanner = scan_scalar;
 }
 
+/**
+ * Scan forward for a space-equiv character like (); that is corrupting
+ * a BASE64 decode, so we can shorten the string, decode it, then
+ * try again.
+ */
+static size_t
+find_space_equiv(const char *data, size_t max) {
+    for (size_t i = 0; i < max; i++) {
+        char c = data[i];
+        if (c == '(' || c == ')' || c == ';')
+            return i;
+    }
+    return max;
+}
+
 /* ---------------- Main wrapper ---------------- */
 
 size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
@@ -437,11 +357,20 @@ size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
          */
         size_t length = scanner(data + cursor);
         
+    retry:
         /*
          * Process leftover characters from the previous large BASE64
          * strin, completing a 4-character group by pulling from the next run.
          */
         if (carry_length) {
+            
+            /*
+             * Save off existing state in case we need to retry
+             */
+            char carry2[4];
+            size_t carry2_length = carry_length;
+            memcpy(carry2, carry_buf, 4);
+            
             const size_t need = 4 - carry_length;
             
             /* Boundary: we still don't have enough characters, so loop
@@ -455,16 +384,25 @@ size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
 
             /* Complete the quartet */
             memcpy(carry_buf + carry_length, data + cursor, need);
-            cursor += need; /* move our cursor forward */
-            length -= need; /* reduce the length of the next string.*/
-
+            
             /* Call the parser on our little bit */
             const size_t count = tb64dec(carry_buf, 4, out->wire.buf + out->wire.len);
             out->wire.len += count;
-            if (count == 0)
-                return PARSE_ERR(1, cursor, max, out);
+            if (count == 0) {
+                size_t length2 = find_space_equiv(data + cursor, length);
+                if (length2 < length) {
+                    /* we have (parens) or ;comment and need to retry */
+                    length = length2;
+                    carry_length = carry2_length;
+                    memcpy(carry_buf, carry2, 4);
+                    goto retry;
+                } else
+                    return PARSE_ERR(1, cursor, max, out);
+            }
             
-            
+            cursor += need; /* move our cursor forward */
+            length -= need; /* reduce the length of the next string.*/
+
             /* empty our carry buffer */
             carry_length = 0;
         }
@@ -482,10 +420,18 @@ size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
          */
         if (aligned) {
             size_t count = tb64dec(data + cursor, aligned, out->wire.buf + out->wire.len);
+            if (count == 0) {
+                size_t length2 = find_space_equiv(data + cursor, length);
+                if (length2 < length) {
+                    /* we have (parens) or ;comment and need to retry */
+                    length = length2;
+                    goto retry;
+                } else
+                    return PARSE_ERR(1, cursor, max, out);
+            }
             out->wire.len += count;
             cursor += aligned;
-            if (count == 0)
-                return PARSE_ERR(1, cursor, max, out);
+                
         }
         
         /*
@@ -497,8 +443,6 @@ size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
             carry_length = leftovers;
             cursor += leftovers;
         }
-
-
         
     again:
         /*

@@ -30,6 +30,8 @@
 
 #include "zone-parse.h"
 #include "zone-atom.h"
+#include "zone-parse-token.h"
+
 
 #include <stddef.h>
 #include <stdint.h>
@@ -231,7 +233,7 @@ zone_atom_type(const char *data, size_t cursor, size_t max,
  *   - If any token is unknown and not TYPEdddd, we set err once (but keep going).
  */
 size_t
-zone_atom_bitmap(const char *data, size_t cursor, size_t max,
+zone_atom_typelist_a(const char *data, size_t cursor, size_t max,
                  struct wire_record_t *out, unsigned *depth)
 {
     if (cursor > max)
@@ -263,16 +265,10 @@ zone_atom_bitmap(const char *data, size_t cursor, size_t max,
 
         unsigned type_value = 0;
         unsigned found = zone_type2_lookup(data + start, len, &type_value);
+        if (!found)
+            return PARSE_ERR(1, cursor, max, out);
 
-        if (!found) {
-            if (!parse_TYPE_decimal(data + start, len, &type_value)) {
-                PARSE_ERR(1, cursor, max, out);
-
-                /* skip unknown token */
-                continue;
-            }
-        }
-
+    
         if (type_count < sizeof(types)/sizeof(types[0])) {
             types[type_count++] = type_value;
         } else {
@@ -329,6 +325,155 @@ zone_atom_bitmap(const char *data, size_t cursor, size_t max,
 
     return cursor;
 }
+
+typedef uint8_t nsec_t[32 /* 256 / 8 */ + 2];
+
+static int is_word(const char c) {
+    return ('a' <= c && c <= 'z')
+        || ('A' <= c && c <= 'Z')
+        || ('0' <= c && c <= '9')
+        || (c == '-');
+}
+static inline size_t get_length(const char *data, size_t cursor) {
+    size_t i = 0;
+    while (is_word(data[i]))
+        i++;
+    return i;
+}
+
+size_t
+zone_atom_nseclist_b(const char *data, size_t cursor, size_t max,
+                     struct wire_record_t *out, unsigned *depth) {
+    {
+        nsec_t *bitmap = (void*)(out->wire.buf + out->wire.len);
+        
+        unsigned highest_window = 0;
+        unsigned windows[256] = { 0 };
+        
+        while (cursor < max) {
+            size_t length = get_length(data, cursor);
+            
+            unsigned code = 0;
+            unsigned is_found = zone_type2_lookup(data + cursor, length, &code);
+            if (!is_found)
+                goto fail;
+            
+            unsigned bit = code % 256;
+            unsigned block = bit / 8;
+            unsigned window = code / 256;
+            
+            if (!windows[window])
+                memset(bitmap[window], 0, sizeof(bitmap[window]));
+            if (window > highest_window)
+                highest_window = window;
+            windows[window] |= 1 << block;
+            bitmap[window][2 + block] |= (1 << (7 - bit % 8));
+            
+            cursor += length;
+            cursor = zone_parse_space(data, cursor, max, out, depth);
+            if (data[cursor] == '\r' || data[cursor] == 'n')
+                break;
+        }
+        
+        for (unsigned window = 0; window <= highest_window; window++) {
+            if (!windows[window])
+                continue;
+            unsigned blocks = (64 - ctz32(windows[window]));
+            unsigned char *octets = out->wire.buf + out->wire.len;
+            memmove(octets, &bitmap[window], 2 + blocks);
+            octets[0] = (uint8_t)window;
+            octets[1] = blocks;
+            out->wire.len += 2 + blocks;
+        }
+    }
+    
+    return cursor;
+
+fail:
+    return PARSE_ERR(1, cursor, max, out);
+}
+
+
+size_t
+zone_atom_nxtlist_b(const char *data, size_t cursor, size_t max,
+                     struct wire_record_t *out, unsigned *depth) {
+    /* "classify" tokens (nospace vs. space */
+    parsetokens_t tokens = {0};
+
+    /* Point to where we are writing the output. */
+    unsigned char *wire_buf = out->wire.buf;
+    wire_buf[0] = 0; /* init first byte */
+
+    /* Temporary cursor in case we error out to slow-path */
+    size_t next = cursor;
+    
+    /* Index to the highest block */
+    unsigned highest_block = 0;
+    
+    
+    for (;;) {
+        /*
+         * Get the "length" of the next token, the contiguous non-space
+         * characters.
+         */
+        size_t length = parse_token_length(data, next, &tokens);
+        if (length == 0 || length >= 256)
+            goto slow_path;
+        
+        /*
+         * Lookup this TYPE name in our table of known types, getting the
+         * "value" of the field. This includes TYPEnnnn parsing.
+         */
+        unsigned type_value = 0;
+        unsigned is_found = zone_type2_lookup(data + next, length, &type_value);
+        if (!is_found)
+            goto slow_path;
+        
+        /*
+         * Do the block/bit things for NXT NSEC NSEC3 records.
+         */
+        unsigned bit = type_value % 8;
+        unsigned block = type_value / 8;
+        
+        /*
+         * Clear new blocks, as the type number increases.
+         */
+        if (block > highest_block) {
+            memset(&wire_buf[highest_block+1], 0, block - highest_block);
+            highest_block = block;
+        }
+        
+        /*
+         * Set the bit indicating the TYPE value
+         */
+        wire_buf[block] |= 1 << (7 - bit);
+        
+        /*
+         * Skip this token that we just parsed
+         */
+        next += length;
+        
+        /*
+         * Skip space between tokens
+         */
+        length += parse_space_length(data, next, &tokens);
+        
+        /*
+         * Test if we've reached end of the record
+         */
+        if (data[next] == '\r' || data[next] == '\n')
+            break;
+    }
+    
+    /* Mark the number of bytes we wrote to the output wire buffer */
+    out->wire.len += highest_block + 1;
+    
+    return next;
+
+slow_path:
+    return zone_atom_nxtlist_b(data, cursor, max, out, depth);
+}
+
 
 /* -------------------------------------------------------------------------- */
 /* Quicktest                                                                  */
@@ -407,7 +552,7 @@ zone_atom_bitmap_quicktest(void)
         /*
          * Call test function
          */
-        zone_atom_bitmap(tcs[i].in, 0, max, &out, &depth);
+        zone_atom_typelist_a(tcs[i].in, 0, max, &out, &depth);
 
         if (out.err.code != 0) {
             fprintf(stderr, "bitmap tc[%zu] %s: err_code=%u cursor=%zu\n",
