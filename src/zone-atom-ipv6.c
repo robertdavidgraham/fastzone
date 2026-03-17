@@ -471,7 +471,7 @@ int zone_atom_ipv6_quicktest(void)
     if (err != 0) {
         printf("ipv6_quicktest: FAIL (%d failures)\n", err);
     } else {
-        printf("ipv6_quicktest: PASS\n");
+        ; //printf("ipv6_quicktest: PASS\n");
     }
 
     return err;

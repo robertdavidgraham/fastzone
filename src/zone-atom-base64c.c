@@ -536,7 +536,7 @@ int zone_atom_base64c_quicktest(void) {
     }
     
     if (failed == 0) {
-        fprintf(stderr, "[+] atom.base64c: all %d tests passed!\n", num_tests);
+        ; //fprintf(stderr, "[+] atom.base64c: all %d tests passed!\n", num_tests);
     } else {
         fprintf(stderr, "[-] atom.base64c: %d out of %d tests failed\n", failed, num_tests);
         return 1;
@@ -555,7 +555,7 @@ void zone_atom_base64c_init(int backend) {
     void *h = dlopen("libtb64.so", RTLD_NOW | RTLD_NODELETE);
     if (h == NULL) {
         perror("libtb64.so");
-        fprintf(stderr, "[-] load Turbo-BASE64\n");
+        fprintf(stderr, "[-] failed to load Turbo-BASE64\n");
 
     } else {
         int err = 0;
@@ -577,7 +577,7 @@ void zone_atom_base64c_init(int backend) {
             err |= 1;
         }
 
-        fprintf(stderr, "[+] load Turbo-BASE64\n");
+        fprintf(stderr, "[+] loaded Turbo-BASE64\n");
     }
 
 }

@@ -146,7 +146,7 @@ int zone_atom_quicktest(void) {
     err += zone_atom_expire2_quicktest();
 
     if (err == 0) {
-        fprintf(stderr, "[+] atom: test success!\n");
+        ; //fprintf(stderr, "[+] atom: test success!\n");
     } else {
         fprintf(stderr, "[-] atom: tests failed :-(\n");
     }

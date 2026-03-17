@@ -227,6 +227,9 @@ unsigned parse_file(const char *filename) {
 
 extern void zone_atom_ttl_bench(void);
 int main(int argc, char *argv[]) {
+    
+    fprintf(stderr, "--- fastzone/0.1 ---\n");
+    
     /*
      * WARNING: don't start reading the code here, read the
      * README.md file first.
@@ -236,7 +239,7 @@ int main(int argc, char *argv[]) {
      * Must be called beore anything. Things won't work if not
      * initialized.
      */
-    zone_init(SIMD_NEON);
+    zone_init(SIMD_SCALAR);
 
      
     int err = 0;

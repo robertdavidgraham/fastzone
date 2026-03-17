@@ -454,7 +454,7 @@ zone_atom_ht_init(void)
         } else
             break;
     }
-    printf("tries = %u\n", i);
+    //printf("tries = %u\n", i);
     zone_atom_ht_ready = 1;
 
     unsigned value = 0;

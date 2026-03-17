@@ -10,7 +10,7 @@
 		1158B5AC2F51658300308FF8 /* zone-parse-header2.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B58E2F51658300308FF8 /* zone-parse-header2.c */; };
 		1158B5AD2F51658300308FF8 /* zone-atom.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5732F51658300308FF8 /* zone-atom.c */; };
 		1158B5AE2F51658300308FF8 /* zone-atom-base64c.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5762F51658300308FF8 /* zone-atom-base64c.c */; };
-		1158B5AF2F51658300308FF8 /* zone-atom-hex.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B57C2F51658300308FF8 /* zone-atom-hex.c */; };
+		1158B5AF2F51658300308FF8 /* zone-atom-hexa.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B57C2F51658300308FF8 /* zone-atom-hexa.c */; };
 		1158B5B02F51658300308FF8 /* zone-scan-eol.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B59E2F51658300308FF8 /* zone-scan-eol.c */; };
 		1158B5B12F51658300308FF8 /* zone-parse-header2-test.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B58F2F51658300308FF8 /* zone-parse-header2-test.c */; };
 		1158B5B22F51658300308FF8 /* zone-atom-name4.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5822F51658300308FF8 /* zone-atom-name4.c */; };
@@ -20,7 +20,6 @@
 		1158B5B62F51658300308FF8 /* zone-parse-test.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5942F51658300308FF8 /* zone-parse-test.c */; };
 		1158B5B72F51658300308FF8 /* zone-parse-mask.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5912F51658300308FF8 /* zone-parse-mask.c */; };
 		1158B5B82F51658300308FF8 /* zone-scan-esc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B59F2F51658300308FF8 /* zone-scan-esc.c */; };
-		1158B5B92F51658300308FF8 /* zone-rrtype.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B59B2F51658300308FF8 /* zone-rrtype.c */; };
 		1158B5BA2F51658300308FF8 /* zone-atom-base64d.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5772F51658300308FF8 /* zone-atom-base64d.c */; };
 		1158B5BB2F51658300308FF8 /* zone-atom-expire2.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B57B2F51658300308FF8 /* zone-atom-expire2.c */; };
 		1158B5BC2F51658300308FF8 /* zone-atom-type1.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5872F51658300308FF8 /* zone-atom-type1.c */; };
@@ -28,7 +27,6 @@
 		1158B5BE2F51658300308FF8 /* zone-atom-expire1.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B57A2F51658300308FF8 /* zone-atom-expire1.c */; };
 		1158B5BF2F51658300308FF8 /* zone-atom-ipv4.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B57E2F51658300308FF8 /* zone-atom-ipv4.c */; };
 		1158B5C02F51658300308FF8 /* zone-atom-ipv6.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B57F2F51658300308FF8 /* zone-atom-ipv6.c */; };
-		1158B5C12F51658300308FF8 /* zone-token.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5A92F51658300308FF8 /* zone-token.c */; };
 		1158B5C22F51658300308FF8 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5682F51658300308FF8 /* main.c */; };
 		1158B5C32F51658300308FF8 /* zone-atom-base64b.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5752F51658300308FF8 /* zone-atom-base64b.c */; };
 		1158B5C42F51658300308FF8 /* zone-parse-record.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5932F51658300308FF8 /* zone-parse-record.c */; };
@@ -96,7 +94,7 @@
 		1158B5792F51658300308FF8 /* zone-atom-caaval.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-caaval.c"; path = "src/zone-atom-caaval.c"; sourceTree = "<group>"; };
 		1158B57A2F51658300308FF8 /* zone-atom-expire1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-expire1.c"; path = "src/zone-atom-expire1.c"; sourceTree = "<group>"; };
 		1158B57B2F51658300308FF8 /* zone-atom-expire2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-expire2.c"; path = "src/zone-atom-expire2.c"; sourceTree = "<group>"; };
-		1158B57C2F51658300308FF8 /* zone-atom-hex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-hex.c"; path = "src/zone-atom-hex.c"; sourceTree = "<group>"; };
+		1158B57C2F51658300308FF8 /* zone-atom-hexa.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-hexa.c"; path = "src/zone-atom-hexa.c"; sourceTree = "<group>"; };
 		1158B57D2F51658300308FF8 /* zone-atom-int.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-int.c"; path = "src/zone-atom-int.c"; sourceTree = "<group>"; };
 		1158B57E2F51658300308FF8 /* zone-atom-ipv4.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-ipv4.c"; path = "src/zone-atom-ipv4.c"; sourceTree = "<group>"; };
 		1158B57F2F51658300308FF8 /* zone-atom-ipv6.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-ipv6.c"; path = "src/zone-atom-ipv6.c"; sourceTree = "<group>"; };
@@ -126,8 +124,6 @@
 		1158B5972F51658300308FF8 /* zone-parse-types2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-types2.c"; path = "src/zone-parse-types2.c"; sourceTree = "<group>"; };
 		1158B5982F51658300308FF8 /* zone-qbench.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-qbench.h"; path = "src/zone-qbench.h"; sourceTree = "<group>"; };
 		1158B5992F51658300308FF8 /* zone-qbench.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-qbench.c"; path = "src/zone-qbench.c"; sourceTree = "<group>"; };
-		1158B59A2F51658300308FF8 /* zone-rrtype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-rrtype.h"; path = "src/zone-rrtype.h"; sourceTree = "<group>"; };
-		1158B59B2F51658300308FF8 /* zone-rrtype.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-rrtype.c"; path = "src/zone-rrtype.c"; sourceTree = "<group>"; };
 		1158B59C2F51658300308FF8 /* zone-scan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-scan.h"; path = "src/zone-scan.h"; sourceTree = "<group>"; };
 		1158B59D2F51658300308FF8 /* zone-scan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan.c"; path = "src/zone-scan.c"; sourceTree = "<group>"; };
 		1158B59E2F51658300308FF8 /* zone-scan-eol.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-eol.c"; path = "src/zone-scan-eol.c"; sourceTree = "<group>"; };
@@ -140,8 +136,6 @@
 		1158B5A52F51658300308FF8 /* zone-scan-qtest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-qtest.c"; path = "src/zone-scan-qtest.c"; sourceTree = "<group>"; };
 		1158B5A62F51658300308FF8 /* zone-scan-quote.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-quote.c"; path = "src/zone-scan-quote.c"; sourceTree = "<group>"; };
 		1158B5A72F51658300308FF8 /* zone-scan-space.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-scan-space.c"; path = "src/zone-scan-space.c"; sourceTree = "<group>"; };
-		1158B5A82F51658300308FF8 /* zone-token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-token.h"; path = "src/zone-token.h"; sourceTree = "<group>"; };
-		1158B5A92F51658300308FF8 /* zone-token.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-token.c"; path = "src/zone-token.c"; sourceTree = "<group>"; };
 		1158B5AA2F51658300308FF8 /* zone-workq.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-workq.h"; path = "src/zone-workq.h"; sourceTree = "<group>"; };
 		1158B5AB2F51658300308FF8 /* zone-workq.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-workq.c"; path = "src/zone-workq.c"; sourceTree = "<group>"; };
 		1158B5DF2F53D29900308FF8 /* zone-parse-token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-parse-token.h"; path = "src/zone-parse-token.h"; sourceTree = "<group>"; };
@@ -169,7 +163,7 @@
 			children = (
 				1158B5E72F62031200308FF8 /* util-parseint.h */,
 				1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */,
-				1158B57C2F51658300308FF8 /* zone-atom-hex.c */,
+				1158B57C2F51658300308FF8 /* zone-atom-hexa.c */,
 				1158B5E22F5FA3AF00308FF8 /* util-hex16.h */,
 				1158B5E32F5FA3AF00308FF8 /* util-hex16.c */,
 				1158B5DF2F53D29900308FF8 /* zone-parse-token.h */,
@@ -223,8 +217,6 @@
 				1158B5972F51658300308FF8 /* zone-parse-types2.c */,
 				1158B5982F51658300308FF8 /* zone-qbench.h */,
 				1158B5992F51658300308FF8 /* zone-qbench.c */,
-				1158B59A2F51658300308FF8 /* zone-rrtype.h */,
-				1158B59B2F51658300308FF8 /* zone-rrtype.c */,
 				1158B59C2F51658300308FF8 /* zone-scan.h */,
 				1158B59D2F51658300308FF8 /* zone-scan.c */,
 				1158B59E2F51658300308FF8 /* zone-scan-eol.c */,
@@ -237,8 +229,6 @@
 				1158B5A52F51658300308FF8 /* zone-scan-qtest.c */,
 				1158B5A62F51658300308FF8 /* zone-scan-quote.c */,
 				1158B5A72F51658300308FF8 /* zone-scan-space.c */,
-				1158B5A82F51658300308FF8 /* zone-token.h */,
-				1158B5A92F51658300308FF8 /* zone-token.c */,
 				1158B5AA2F51658300308FF8 /* zone-workq.h */,
 				1158B5AB2F51658300308FF8 /* zone-workq.c */,
 				11D53A3E2F505D4000361606 /* Products */,
@@ -317,7 +307,7 @@
 				1158B5E12F53D29900308FF8 /* zone-parse-token.c in Sources */,
 				1158B5AD2F51658300308FF8 /* zone-atom.c in Sources */,
 				1158B5AE2F51658300308FF8 /* zone-atom-base64c.c in Sources */,
-				1158B5AF2F51658300308FF8 /* zone-atom-hex.c in Sources */,
+				1158B5AF2F51658300308FF8 /* zone-atom-hexa.c in Sources */,
 				1158B5B02F51658300308FF8 /* zone-scan-eol.c in Sources */,
 				1158B5B12F51658300308FF8 /* zone-parse-header2-test.c in Sources */,
 				1158B5B22F51658300308FF8 /* zone-atom-name4.c in Sources */,
@@ -327,7 +317,6 @@
 				1158B5B62F51658300308FF8 /* zone-parse-test.c in Sources */,
 				1158B5B72F51658300308FF8 /* zone-parse-mask.c in Sources */,
 				1158B5B82F51658300308FF8 /* zone-scan-esc.c in Sources */,
-				1158B5B92F51658300308FF8 /* zone-rrtype.c in Sources */,
 				1158B5BA2F51658300308FF8 /* zone-atom-base64d.c in Sources */,
 				1158B5BB2F51658300308FF8 /* zone-atom-expire2.c in Sources */,
 				1158B5BC2F51658300308FF8 /* zone-atom-type1.c in Sources */,
@@ -335,7 +324,6 @@
 				1158B5BE2F51658300308FF8 /* zone-atom-expire1.c in Sources */,
 				1158B5BF2F51658300308FF8 /* zone-atom-ipv4.c in Sources */,
 				1158B5C02F51658300308FF8 /* zone-atom-ipv6.c in Sources */,
-				1158B5C12F51658300308FF8 /* zone-token.c in Sources */,
 				1158B5C22F51658300308FF8 /* main.c in Sources */,
 				1158B5C32F51658300308FF8 /* zone-atom-base64b.c in Sources */,
 				1158B5C42F51658300308FF8 /* zone-parse-record.c in Sources */,

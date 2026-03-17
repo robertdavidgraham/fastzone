@@ -248,7 +248,7 @@ int zone_atom_base64b_quicktest(void) {
     }
     
     if (failed == 0) {
-        fprintf(stderr, "[+] atom.base64b: all %d tests passed!\n", num_tests);
+        ; //fprintf(stderr, "[+] atom.base64b: all %d tests passed!\n", num_tests);
     } else {
         fprintf(stderr, "[-] atom.base64b: %d out of %d tests failed\n", failed, num_tests);
         return 1;
