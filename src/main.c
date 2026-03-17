@@ -12,21 +12,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <ctype.h>
 
 #ifdef _WIN32
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include <io.h>
+#define close _close
+#define open _open
 #else
 #include <unistd.h>
 #endif
-#include <fcntl.h>
-#include <sys/stat.h>
 
+#ifdef _WIN32
+// Source - https://stackoverflow.com/a/26085827
+// Posted by Michaelangel007, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-03-17, License - CC BY-SA 3.0
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <stdint.h> // portable: uint64_t   MSVC: __int64 
 
+// MSVC defines this in winsock2.h!?
+typedef struct timeval {
+    long tv_sec;
+    long tv_usec;
+} timeval;
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
+static int gettimeofday(struct timeval* tp, struct timezone* tzp)
+{
+    // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
+    // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
+    // until 00:00:00 January 1, 1970 
+    static const uint64_t EPOCH = ((uint64_t)116444736000000000ULL);
+
+    SYSTEMTIME  system_time;
+    FILETIME    file_time;
+    uint64_t    time;
+
+    GetSystemTime(&system_time);
+    SystemTimeToFileTime(&system_time, &file_time);
+    time = ((uint64_t)file_time.dwLowDateTime);
+    time += ((uint64_t)file_time.dwHighDateTime) << 32;
+
+    tp->tv_sec = (long)((time - EPOCH) / 10000000L);
+    tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
+    return 0;
+}
+#endif
+
 
 
 int my_benchmark(int argc, char **argv) {
@@ -70,11 +110,6 @@ int my_benchmark(int argc, char **argv) {
 
 
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <ctype.h>
 
 static void
 print_c(char c) {
@@ -141,8 +176,8 @@ unsigned parse_file(const char *filename) {
     /*
      * Read in the contents
      */
-    long long bytes_read = read(fd, data, filesize);
-    if (bytes_read < filesize) {
+    long long bytes_read = read(fd, data, (unsigned)filesize);
+    if (bytes_read < (long long)filesize) {
         perror(filename);
         close(fd);
         return 0;
@@ -164,7 +199,7 @@ unsigned parse_file(const char *filename) {
          */
         zone_state_t state = {0};
         state.ttl = 3600;
-        memcpy(state.origin, "\x07example\x03com\x00", 13);
+        memcpy(state.origin, "\x07" "example" "\x03" "com" "\x00", 13);
         state.origin_length = 13;
         wire_record_t out = {0};
         out.state.origin = state.origin;
@@ -253,7 +288,7 @@ int main(int argc, char *argv[]) {
     if (argc > 1) {
         parse_file(argv[1]);
     } else {
-        parse_file("ns.se.zone");
+        parse_file("se.zone");
     }
                    
     return 0;

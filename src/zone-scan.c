@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef _WIN32
+#define strdup _strdup
+#endif
+
 /**
  * Sets the current line number and character number for later error reporting,
  * so that we can know where errors occur.
@@ -32,11 +36,11 @@ block_error(zone_block_t *block, size_t offset, size_t max, enum zone_error err)
  * Return a notification to stop further processing of this block, due to falling off the
  * end of the buffer mid parsing.
  */
-size_t block_frag(zone_block_t *block, size_t pos, size_t len) {
+static size_t block_frag(zone_block_t *block, size_t pos, size_t len) {
     return len + 1;
 }
 
-int block_append(zone_block_t *block, const char *data, size_t offset, size_t next) {
+static int block_append(zone_block_t *block, const char *data, size_t offset, size_t next) {
     if (block->is_full)
         return 1;
     
@@ -52,7 +56,7 @@ int block_append(zone_block_t *block, const char *data, size_t offset, size_t ne
     
     memcpy(block->buf + block->record_ptr, data+offset, length);
     block->record_ptr += length;
-    block->records[block->record_count].contents_length += length;
+    block->records[block->record_count].contents_length += (unsigned short)length;
 
     return 0;
 }
@@ -81,7 +85,7 @@ int block_name_repeat(zone_block_t *block, size_t offset, size_t next) {
 
     /* Fill in the entry */
     record->name = block->last_name;
-    record->name_length = block->last_name_length;
+    record->name_length = (unsigned short)block->last_name_length;
     record->contents_offset = block->record_ptr;
     record->contents_length = 0;
 
@@ -113,7 +117,7 @@ int block_add_name(zone_block_t *block, const char *data, size_t offset, size_t 
     
     memcpy(block->buf + block->record_ptr, data+offset, length);
     record->name = block->buf + block->record_ptr;
-    record->name_length = length;
+    record->name_length = (unsigned short)length;
     
     block->record_ptr += length;
     
@@ -652,7 +656,7 @@ again:
     }
     size_t contents_offset = block->records[block->record_count].contents_offset;
     zone_block_record_t *record = &block->records[block->record_count++];
-    record->contents_length = cursor - contents_offset;
+    record->contents_length = (unsigned short)(cursor - contents_offset);
     
     if (cursor >= max)
         return cursor;

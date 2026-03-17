@@ -20,6 +20,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
+typedef void* HMODULE;
+typedef const char* LPCSTR;
+__declspec(dllimport) HMODULE __stdcall LoadLibraryA(LPCSTR);
+__declspec(dllimport) void* __stdcall GetProcAddress(HMODULE, LPCSTR);
+__declspec(dllimport) int __stdcall FreeLibrary(HMODULE);
+#else
+#include <dlfcn.h>
+#endif
+
+
 /*
  * This is the slow function we'll call if we can't load the library.
  * It's located in util-base64.c. I say "slow" but it appears roughly
@@ -183,13 +194,14 @@ int zone_atom_base64d_quicktest(void) {
     return 0;
 }
 
-#include <dlfcn.h>
 
 void zone_atom_base64d_init(int backend) {
     /* Set our own backend. This may differ from the backend that
      * the Turbo-BASE64 library is using. */
     parse_tokens_init(backend);
 
+#ifdef _WIN32
+#else
     void *h = dlopen("libtb64.so", RTLD_NOW | RTLD_NODELETE);
     if (h == NULL) {
         perror("libtb64.so");
@@ -217,5 +229,6 @@ void zone_atom_base64d_init(int backend) {
 
         fprintf(stderr, "[+] loaded Turbo-BASE64\n");
     }
+#endif
 
 }

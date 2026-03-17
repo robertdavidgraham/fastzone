@@ -16,6 +16,11 @@
 #include <stdbool.h>
 #include <assert.h>
 
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#endif
+
 #ifndef ZONE_ERR_INTERNAL
 #define ZONE_ERR_INTERNAL 0x7FFF
 #endif
@@ -90,6 +95,8 @@ static size_t skip_remainder(const char *data, size_t cursor, size_t max) {
         cursor++;
     return cursor;
 }
+
+
 /**
  * Parse the $ORIGIN or $TTL field.
  * TODO: $INCLUDE and $GENERATE
@@ -284,6 +291,9 @@ again:
     cursor = zone_parse_header2(data, cursor, max, out, &depth);
     rrlength_offset = out->wire.len; /* put length here after parsing */
     wire_append_uint16(out, 0);
+    if (cursor >= max) {
+	    return PARSE_ERR(1, cursor, max, out);
+    }
 
     /*
      * Step 3: Parse the contents of the record

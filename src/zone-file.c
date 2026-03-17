@@ -5,15 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #ifdef _WIN32
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include <io.h>
+#define read _read
 #else
 #include <unistd.h>
 #endif
-#include <fcntl.h>
-#include <sys/stat.h>
 
 
 
@@ -76,6 +77,8 @@ int zone_readfile(struct zone_workq *wq, int fd,
     zone_block_t *block = zone_block_create(filename, origin, ttl, is_ttl_seen);
     
     char *data = malloc(CHUNK_SIZE);
+    if (data == NULL)
+        goto fail;
     
     for (;;) {
         size_t offset = 0;
@@ -83,7 +86,7 @@ int zone_readfile(struct zone_workq *wq, int fd,
         enum block_result_t result;
         
         /* Read the next chunk from memory */
-        max = read(fd, data, CHUNK_SIZE);
+        max = read(fd, data, (unsigned)CHUNK_SIZE);
         if (max == 0)
             break;
         

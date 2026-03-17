@@ -725,8 +725,8 @@ zone_parse_header2(const char *data, size_t cursor, size_t max,
     err |= (idx == 0);
     err |= (off == 0);
     err |= (off >= m.avail);
-    uint64_t other = hdr_other_mask(&m);
-    err |= (ctz64(other) < off);
+    /*uint64_t other = hdr_other_mask(&m);
+    err |= (ctz64(other) < off);*/
     err |= (data[cursor] == '(');
     err |= (data[cursor] == ')');
     err |= (data[cursor] == ';');

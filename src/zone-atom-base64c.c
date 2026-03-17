@@ -13,6 +13,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
+typedef void* HMODULE;
+typedef const char* LPCSTR;
+__declspec(dllimport) HMODULE __stdcall LoadLibraryA(LPCSTR);
+__declspec(dllimport) void* __stdcall GetProcAddress(HMODULE, LPCSTR);
+__declspec(dllimport) int __stdcall FreeLibrary(HMODULE); 
+#else
+#include <dlfcn.h>
+#endif
+
+
 /*
  * This is the slow function we'll call if we can't load the library
  */
@@ -347,7 +358,7 @@ size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
                          struct wire_record_t *out, unsigned *depth)
 {
     /* Carry 1..3 chars across whitespace. */
-    char carry_buf[4];
+    char carry_buf[4] = { 0, 0, 0, 0 };
     size_t carry_length = 0;
 
     for (;;) {
@@ -545,13 +556,14 @@ int zone_atom_base64c_quicktest(void) {
     return 0;
 }
 
-#include <dlfcn.h>
 
 void zone_atom_base64c_init(int backend) {
     /* Set our own backend. This may differ from the backend that
      * the Turbo-BASE64 library is using. */
     zone_scan_nobase_init(backend);
 
+#ifdef _WIN32
+#else
     void *h = dlopen("libtb64.so", RTLD_NOW | RTLD_NODELETE);
     if (h == NULL) {
         perror("libtb64.so");
@@ -579,5 +591,6 @@ void zone_atom_base64c_init(int backend) {
 
         fprintf(stderr, "[+] loaded Turbo-BASE64\n");
     }
+#endif
 
 }

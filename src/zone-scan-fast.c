@@ -23,7 +23,7 @@ static size_t scan_avx2(const char *data, size_t i, size_t len) {
                                            _mm256_or_si256(_mm256_or_si256(m3, m4), m5));
         
         int mask = _mm256_movemask_epi8(combined);
-        if (mask) return i + __builtin_ctz(mask);
+        if (mask) return i + ctz32(mask);
     }
     
     for (; i < len; i++) {
@@ -54,7 +54,7 @@ static size_t scan_sse2(const char *data, size_t i, size_t len) {
                                         _mm_or_si128(_mm_or_si128(m3, m4), m5));
         
         int mask = _mm_movemask_epi8(combined);
-        if (mask) return i + __builtin_ctz(mask);
+        if (mask) return i + ctz32(mask);
     }
     
     for (; i < len; i++) {

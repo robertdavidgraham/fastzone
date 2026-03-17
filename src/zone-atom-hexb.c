@@ -153,7 +153,7 @@ zone_atom_hexels_b(const char *data, size_t cursor, size_t max,
     size_t length = out->wire.len - len_offset - 1;
     if (length >= 256)
         return PARSE_ERR(1, cursor, max, out);
-    out->wire.buf[len_offset] = length;
+    out->wire.buf[len_offset] = (unsigned char)length;
     
     return next;
 }

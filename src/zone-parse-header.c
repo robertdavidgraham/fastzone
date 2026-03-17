@@ -97,7 +97,7 @@ zone_parse_header(const char *data, size_t cursor, size_t max,
             next++;
         unsigned type_value;
         unsigned type_idx;
-        if (next - cursor == 2 & data[cursor+0] == 'I' && data[cursor+1] == 'N') {
+        if (next - cursor == 2 && data[cursor+0] == 'I' && data[cursor+1] == 'N') {
             type_idx = 1;
             type_value = 1;
         } else {
@@ -147,6 +147,7 @@ struct zone_type_test_expect {
     uint16_t rrtype_value;   /* 0 if not present */
     const char *rrtype_name;/* NULL for TYPE### or if not present */
     size_t consumed;
+    unsigned char wire[32];
 };
 
 struct zone_type_test_case {
@@ -162,6 +163,10 @@ static const struct zone_type_test_case test_cases[] = {
         { 0, 0, 0, 65280, NULL, 14 }},*/
     /* 10 */
  
+    {
+        "  3600 IN NAPTR 100 10 \"u\" \"E2U+sip\" \"!^.*$!sip:help@example.!\" . ; naptr\n",
+        { 0, 3600, 1, 35, "NAPTR", 16 }
+    },
 
     /* 0 */
     {"                 3600   IN   A      192.0.2.10        ; web v4\n",
@@ -284,7 +289,7 @@ static const struct zone_type_test_case test_cases[] = {
 
 int zone_parse_header_quicktest(void) {
     int err = 0;
-    unsigned char wirebuf[128*1024];
+    unsigned char *wirebuf = malloc(128*1024);
     int i;
     
     for (i=0; test_cases[i].input; i++) {
@@ -305,7 +310,7 @@ int zone_parse_header_quicktest(void) {
          */
         out.wire.buf = wirebuf;
         out.wire.len = 0;
-        out.wire.max = sizeof(wirebuf);
+        out.wire.max = 65536;
         
         /*
          * Call the test function
@@ -320,30 +325,30 @@ int zone_parse_header_quicktest(void) {
          * Verify the output
          */
         if (out.err.code && expect->error_code == 0) {
-            fprintf(stderr, "[-] header2:%d: unexpected error\n", i);
+            fprintf(stderr, "[-] header1:%d: unexpected error\n", i);
             fprintf(stderr, "--- %s", data);
             return err;
         }
         if (consumed != expect->consumed) {
-            fprintf(stderr, "[-] header2:%d: consumed: found=%u, expected=%u\n", i,
+            fprintf(stderr, "[-] header1:%d: consumed: found=%u, expected=%u\n", i,
                     (unsigned)consumed, (unsigned)expect->consumed);
             fprintf(stderr, "--- %s", data);
             //return err;
         }
         if (expect->rrttl && expect->rrttl != rrttl) {
-            fprintf(stderr, "[-] header2:%d: ttl: found=%u, expected=%u\n", i,
+            fprintf(stderr, "[-] header1:%d: ttl: found=%u, expected=%u\n", i,
                     (unsigned)rrttl, (unsigned)expect->rrttl);
             fprintf(stderr, "--- %s", data);
             //return err;
         }
         if (expect->rrclass && expect->rrclass != rrclass) {
-            fprintf(stderr, "[-] header2:%d: class: found=%u, expected=%u\n", i,
+            fprintf(stderr, "[-] header1:%d: class: found=%u, expected=%u\n", i,
                     (unsigned)rrclass, (unsigned)expect->rrclass);
             fprintf(stderr, "--- %s", data);
             //return err;
         }
         if (expect->rrtype_value && expect->rrtype_value != out.rrtype.value) {
-            fprintf(stderr, "[-] header2:%d: type: found=%u, expected=%u\n", i,
+            fprintf(stderr, "[-] header1:%d: type: found=%u, expected=%u\n", i,
                     (unsigned)out.rrtype.value, (unsigned)expect->rrtype_value);
             fprintf(stderr, "--- %s", data);
             //return err;

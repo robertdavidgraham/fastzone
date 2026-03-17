@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include "util-ctz.h"
 
 /* -------------------------------- scalar ---------------------------------- */
 static inline size_t
@@ -44,7 +45,7 @@ scan_quote_swar(const char *data, size_t i, size_t len_ignored)
 
     for (;;) {
         uint64_t w;
-        __builtin_memcpy(&w, data + i, 8);
+        memcpy(&w, data + i, 8);
 
         uint64_t m =
             zone_has_eq_u8(w, (uint8_t)'"') |
@@ -52,7 +53,7 @@ scan_quote_swar(const char *data, size_t i, size_t len_ignored)
             zone_has_eq_u8(w, (uint8_t)'\n');
 
         if (m) {
-            unsigned bit = (unsigned)__builtin_ctzll(m);
+            unsigned bit = ctz64(m);
             return i + (size_t)(bit >> 3);
         }
 
@@ -82,7 +83,7 @@ scan_quote_sse2(const char *data, size_t i, size_t len_ignored)
 
         unsigned mask = (unsigned)_mm_movemask_epi8(m);
         if (mask) {
-            unsigned idx = (unsigned)__builtin_ctz(mask);
+            unsigned idx = ctz32(mask);
             return i + (size_t)idx;
         }
 
@@ -143,7 +144,7 @@ scan_quote_avx2(const char *data, size_t i, size_t len_ignored)
 
         unsigned mask = (unsigned)_mm256_movemask_epi8(m);
         if (mask) {
-            unsigned idx = (unsigned)__builtin_ctz(mask);
+            unsigned idx = ctz32(mask);
             return i + (size_t)idx;
         }
 
@@ -174,7 +175,7 @@ scan_quote_avx512(const char *data, size_t i, size_t len_ignored)
             _mm512_cmpeq_epi8_mask(v, nl);
 
         if (m) {
-            unsigned idx = (unsigned)__builtin_ctzll((unsigned long long)m);
+            unsigned idx = ctz64((unsigned long long)m);
             return i + (size_t)idx;
         }
 

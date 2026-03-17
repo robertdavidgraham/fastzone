@@ -3,6 +3,8 @@
 #include "zone-parse.h"
 #include "zone-parse-record.h"
 #include "zone-error.h"
+#include "util-ctz.h"
+
 /* zone-atom-svcparams.c
  *
  * RFC 9460 SvcParams parser for SVCB/HTTPS RDATA.
@@ -112,7 +114,7 @@ find_key_length(const char *data, size_t cursor, size_t max)
         uint64_t chunk;
 
         /* unaligned load is fine on x86/ARM64 */
-        __builtin_memcpy(&chunk, p + offset, sizeof(chunk));
+        memcpy(&chunk, p + offset, sizeof(chunk));
 
         uint64_t x_eq = chunk ^ eq_mask;
         uint64_t x_nl = chunk ^ nl_mask;
@@ -132,7 +134,7 @@ find_key_length(const char *data, size_t cursor, size_t max)
 
         if (m) {
             /* first matching byte */
-            unsigned bit_index = __builtin_ctzll(m);
+            unsigned bit_index = ctz64(m);
             unsigned byte_index = bit_index >> 3;
             return offset + byte_index;
         }

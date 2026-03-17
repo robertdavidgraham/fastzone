@@ -87,8 +87,8 @@ size_t
 parse_ttl_fast(const char *data, size_t cursor, size_t length,
                   unsigned *ttl_out, int *err);
 
-extern unsigned zone_type1_lookup( const char * restrict data, size_t length,  unsigned * restrict type_value);
-extern unsigned zone_type2_lookup( const char * restrict name, size_t length, unsigned * restrict type_value);
+extern unsigned zone_type1_lookup( const char * data, size_t length,  unsigned *type_value);
+extern unsigned zone_type2_lookup( const char * name, size_t length, unsigned *type_value);
 extern unsigned zone_type2_lookup_val(unsigned value);
 
 struct wire_record_t;
