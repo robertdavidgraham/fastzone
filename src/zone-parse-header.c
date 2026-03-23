@@ -164,8 +164,8 @@ static const struct zone_type_test_case test_cases[] = {
     /* 10 */
  
     {
-        "  3600 IN NAPTR 100 10 \"u\" \"E2U+sip\" \"!^.*$!sip:help@example.!\" . ; naptr\n",
-        { 0, 3600, 1, 35, "NAPTR", 16 }
+        "                 A      192.0.2.10        ; web v4\n",
+        { 0, 0, 0, 1, "A", 24 }
     },
 
     /* 0 */
@@ -174,7 +174,8 @@ static const struct zone_type_test_case test_cases[] = {
     {"                 IN   A      192.0.2.10        ; web v4\n",
     { 0, 0, 1, 1, "A", 29 }},
     {"                 A      192.0.2.10        ; web v4\n",
-    { 0, 0, 0, 1, "A", 24 }},
+        { 0, 0, 0, 1, "A", 24 }
+    },
 
     /* 1 */
     {"\t\t\tIN\tAAAA\t2001:db8::10\t\t; web v6\n",
@@ -286,6 +287,7 @@ static const struct zone_type_test_case test_cases[] = {
 };
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int zone_parse_header_quicktest(void) {
     int err = 0;

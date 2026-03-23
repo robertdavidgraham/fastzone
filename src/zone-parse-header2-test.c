@@ -5,11 +5,6 @@
 #include "zone-parse.h"
 #include "util-simd.h"
 
-/* Under test */
-extern size_t
-zone_parse_header2(const char *data, size_t cursor, size_t max,
-                   struct wire_record_t *out,
-                   unsigned *depth);
 
 
 
@@ -41,8 +36,6 @@ run_one_case(const char *label,
     out.state.default_ttl = 3600;
 
     unsigned depth = 0;
-    if (index == 37)
-        printf("%s\n", data + cursor);
     size_t newc = zone_parse_header2(data, cursor, max, &out, &depth);
 
     int is_bad = 0;

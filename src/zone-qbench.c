@@ -11,6 +11,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifndef _WIN32
+#include <sys/time.h>
+#endif
+
 #ifdef _WIN32
  // Source - https://stackoverflow.com/a/26085827
  // Posted by Michaelangel007, modified by community. See post 'Timeline' for change history

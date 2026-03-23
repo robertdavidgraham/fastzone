@@ -28,6 +28,7 @@
 #define close _close
 #define open _open
 #else
+#include <sys/time.h>
 #include <unistd.h>
 #endif
 
@@ -274,11 +275,11 @@ int main(int argc, char *argv[]) {
      * Must be called beore anything. Things won't work if not
      * initialized.
      */
-    zone_init(SIMD_SCALAR);
+    zone_init(SIMD_NEON);
 
      
     int err = 0;
-    //err += zone_parse_header2_quicktest();
+    err += zone_parse_header2_quicktest();
     err += zone_atom_quicktest();
     err += zone_parse_header_quicktest();
     err += zone_parse_quicktest();

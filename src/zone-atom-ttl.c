@@ -4,6 +4,10 @@
 #include "util-parseint.h"
 #include <time.h>
 
+#ifndef _WIN32
+#include <sys/time.h>
+#endif
+
 static inline char to_lower(char c) {
   if (c >= 'A' && c <= 'Z')
       return (c + 32);

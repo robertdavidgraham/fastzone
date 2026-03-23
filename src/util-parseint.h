@@ -38,7 +38,7 @@
  * wants to avoid the branch of a function-call and would want code-bloat
  * instead.
  *
- * @param buf
+ * @param data
  *  A string containing an integer, like "1234". The buffer must be readable
  *  for at least 8 bytes.
  * @param length
@@ -51,7 +51,7 @@
  *  is to "accumulate" errors in branchless code.
  */
 static inline uint64_t
-parse_integer(const char *buf, size_t length, int *err) {
+parse_integer(const char *data, size_t length, int *err) {
     /* Accumlate errors in case of a bad length. This won't stop
      * parsing, but will indicate the result is malformed. */
     *err |= (length == 0);
@@ -60,7 +60,7 @@ parse_integer(const char *buf, size_t length, int *err) {
     /* Grab the next 8 bytes. The caller guarantees that there are at
      * last 8 extra bytes we can read past the end of their buffers. */
     uint64_t x;
-    memcpy(&x, buf, 8);
+    memcpy(&x, data, 8);
     
     /* Mask off the unused bytes. Most integers will be shorter than
      * the full 8 bytes, this gets rid of the trailing data. */
@@ -74,16 +74,16 @@ parse_integer(const char *buf, size_t length, int *err) {
     *err |= (is_bad != 0);
 
     /* FIXME: is this step necessary?? Isn't 'lo' already that value? */
-    uint64_t data = lo & mask;
+    lo = lo & mask;
 
     /* Swap the bytes around on little-endian architectures, which
      * is most all of the time. Modern CPUs byte-swap with a single
      * instruction. */
     uint64_t shift = (8ULL - length) << 3;
-    data = bswap_maybe(data) >> shift;
+    lo = bswap_maybe(lo) >> shift;
 
     /* This is the expensive part, with each multiply requiring 3 clock cycles. */
-    uint64_t pair = ((data * 10ULL) + (data >> 8)) & 0x00ff00ff00ff00ffULL;
+    uint64_t pair = ((lo * 10ULL) + (lo >> 8)) & 0x00ff00ff00ff00ffULL;
     uint64_t quad = ((pair * 100ULL) + (pair >> 16)) & 0x0000ffff0000ffffULL;
     return ((quad * 10000ULL) + (quad >> 32)) & 0xffffffffULL;
 }

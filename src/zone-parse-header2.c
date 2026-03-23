@@ -611,6 +611,12 @@ zone_parse_header2_init(int simd)
 static int is_digit(char c) {
     return ('0' <= c && c <= '9');
 }
+
+
+#define NEED_IN_WINDOW(_off_) do { if ((_off_) >= 64) goto slow; } while (0)
+#define SPACES_AT(_off_)      (m.spaces >> (_off_))
+#define ALNUM_AT(_off_)       (m.alnum  >> (_off_))
+
 /* ------------ happy-path header parse (single classify, straight line) ------------ */
 
 size_t
@@ -629,42 +635,30 @@ zone_parse_header2(const char *data, size_t cursor, size_t max,
      */
     struct hdrmasks m = g_hdr_classify(data, cursor, max);
     
-    /* Helpers: consume within 64-byte window only */
-#define NEED_IN_WINDOW(_off_) do { if ((_off_) >= 64) goto slow; } while (0)
-#define SPACES_AT(_off_)      (m.spaces >> (_off_))
-#define ALNUM_AT(_off_)       (m.alnum  >> (_off_))
-    
-    size_t off = 0;
+    size_t offset = 0;
     
     /*
-     * skip leading space
+     * skip leading space and get token length
      */
-    unsigned length = ctz64(SPACES_AT(off));
-    off += length;
-    //NEED_IN_WINDOW(off);
-    
-    length = ctz64(ALNUM_AT(off));
+    unsigned length = ctz64(SPACES_AT(offset));
+    offset += length;
+    length = ctz64(ALNUM_AT(offset));
     
     /*
      * TTL
      */
-    if (is_digit(data[cursor + off])) {
-        parse_ttl_fast(data, cursor + off,
+    if (is_digit(data[cursor + offset])) {
+        parse_ttl_fast(data, cursor + offset,
                           max,
                           &rrttl,
                           &err);
 
-        /* skip token */
-        off += length;
-        //NEED_IN_WINDOW(off);
-        
-        /* skip space */
-        length = ctz64(SPACES_AT(off));
-        off += length;
-        //NEED_IN_WINDOW(off);
+        /* skip token and space */
+        offset += length;
+        offset += ctz64(SPACES_AT(offset));
         
         /* next token length */
-        length = ctz64(ALNUM_AT(off));
+        length = ctz64(ALNUM_AT(offset));
     }
         
 
@@ -674,12 +668,12 @@ zone_parse_header2(const char *data, size_t cursor, size_t max,
     /*
      * CLASS
      */
-    if (length == 2 && data[cursor+off] == 'I' && data[cursor+off+1] == 'N') {
+    if (length == 2 && data[cursor+offset] == 'I' && data[cursor+offset+1] == 'N') {
         /* happy path */
         idx = 1;
         rrtype = 1;
     } else {
-        idx = zone_type2_lookup(data + cursor + off,
+        idx = zone_type2_lookup(data + cursor + offset,
                                     length,
                                     &rrtype);
     }
@@ -689,42 +683,33 @@ zone_parse_header2(const char *data, size_t cursor, size_t max,
         /* it’s CLASS */
         rrclass = rrtype;
         
-        /* skip token */
-        off += length;
-        //NEED_IN_WINDOW(off);
-        
-        /* skip space */
-        length = ctz64(SPACES_AT(off));
-        off += length;
-        //NEED_IN_WINDOW(off);
+        /* skip token and space */
+        offset += length;
+        offset += ctz64(SPACES_AT(offset));
         
         /* next token */
-        length = ctz64(ALNUM_AT(off));
+        length = ctz64(ALNUM_AT(offset));
         
-        idx = zone_type2_lookup(data + cursor + off,
+        idx = zone_type2_lookup(data + cursor + offset,
                                          length,
                                          &rrtype);
     }
     out->rrtype.value = rrtype;
     out->rrtype.idx = idx;
     
-    /* skip token */
-    off += length;
-    //NEED_IN_WINDOW(off);
-
-    /* skip space */
-    length = ctz64(SPACES_AT(off));
-    off += length;
-    //NEED_IN_WINDOW(off);
+    /* skip token and space */
+    offset += length;
+    offset += ctz64(SPACES_AT(offset));
     
-    cursor += off;
+    /* Update cursor */
+    cursor += offset;
     
     /*
      * Check for errors
      */
     err |= (idx == 0);
-    err |= (off == 0);
-    err |= (off >= m.avail);
+    err |= (offset == 0);
+    err |= (offset >= m.avail);
     /*uint64_t other = hdr_other_mask(&m);
     err |= (ctz64(other) < off);*/
     err |= (data[cursor] == '(');

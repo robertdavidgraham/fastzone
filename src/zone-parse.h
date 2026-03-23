@@ -75,6 +75,8 @@ size_t
 zone_parse_header(const char *data, size_t i, size_t max, struct wire_record_t *out, unsigned *depth);
 size_t
 zone_parse_header2(const char *data, size_t i, size_t max, struct wire_record_t *out, unsigned *depth);
+size_t
+zone_parse_header3(const char *data, size_t i, size_t max, struct wire_record_t *out, unsigned *depth);
 
 int zone_parse_header2_quicktest(void);
 

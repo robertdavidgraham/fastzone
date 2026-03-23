@@ -109,7 +109,7 @@ static inline void ensure_refill(const char *p, parsetokens_t *tokens)
 /* Returns length of token ended by ANY of: ' ', '\t', '\r', '\n'
  * Consumes that token in tokens-state.
  */
-size_t parse_token_length(const char *data, size_t cursor, parsetokens_t *tokens)
+size_t parse_token_length2(const char *data, size_t cursor, parsetokens_t *tokens)
 {
     size_t total = 0;
 
@@ -138,7 +138,7 @@ size_t parse_token_length(const char *data, size_t cursor, parsetokens_t *tokens
 /* Returns length of run of ONLY (' ' or '\t')
  * Consumes that run in tokens-state.
  */
-size_t parse_space_length(const char *data, size_t cursor, parsetokens_t *tokens)
+size_t parse_space_length2(const char *data, size_t cursor, parsetokens_t *tokens)
 {
     size_t total = 0;
 
@@ -402,18 +402,28 @@ static inline uint32_t neon_movemask_u8(uint8x16_t vff00)
 
 static void scan_neon(const char *p, parsetokens_t *t)
 {
-    const uint8x16_t v  = vld1q_u8((const uint8_t *)(const void *)p);
     const uint8x16_t sp = vdupq_n_u8((uint8_t)' ');
     const uint8x16_t tb = vdupq_n_u8((uint8_t)'\t');
     const uint8x16_t cr = vdupq_n_u8((uint8_t)'\r');
     const uint8x16_t nl = vdupq_n_u8((uint8_t)'\n');
 
-    uint8x16_t m_st = vorrq_u8(vceqq_u8(v, sp), vceqq_u8(v, tb));
-    uint8x16_t m_ws = vorrq_u8(m_st, vorrq_u8(vceqq_u8(v, cr), vceqq_u8(v, nl)));
+    uint64_t mask_st = 0;
+    uint64_t mask_ws = 0;
+    unsigned i;
 
-    t->avail   = 16;
-    t->mask_st = (uint64_t)neon_movemask_u8(m_st);
-    t->mask_ws = (uint64_t)neon_movemask_u8(m_ws);
+    for (i = 0; i < 4; i++) {
+        const uint8x16_t v = vld1q_u8((const uint8_t *)(const void *)(p + i * 16));
+
+        uint8x16_t st = vorrq_u8(vceqq_u8(v, sp), vceqq_u8(v, tb));
+        uint8x16_t ws = vorrq_u8(st, vorrq_u8(vceqq_u8(v, cr), vceqq_u8(v, nl)));
+
+        mask_st |= (uint64_t)neon_movemask_u8(st) << (i * 16);
+        mask_ws |= (uint64_t)neon_movemask_u8(ws) << (i * 16);
+    }
+
+    t->avail   = 64;
+    t->mask_st = mask_st;
+    t->mask_ws = mask_ws;
 }
 #endif
 

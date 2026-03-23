@@ -170,6 +170,7 @@ struct tc_hexes {
 };
 
 static const struct tc_hexes tests[] = {
+    { "AB  CD\r\n", 2, { 0xAB, 0xCD } },
 
     { "A BCD\n", 2, { 0xAB, 0xCD } },
 

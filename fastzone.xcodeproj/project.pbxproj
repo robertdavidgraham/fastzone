@@ -59,6 +59,7 @@
 		1158B5E12F53D29900308FF8 /* zone-parse-token.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E02F53D29900308FF8 /* zone-parse-token.c */; };
 		1158B5E42F5FA3AF00308FF8 /* util-hex16.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E32F5FA3AF00308FF8 /* util-hex16.c */; };
 		1158B5E62F5FA5E300308FF8 /* zone-atom-hexb.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */; };
+		1158B5E92F69348300308FF8 /* zone-parse-header3.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E82F69348300308FF8 /* zone-parse-header3.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -144,6 +145,7 @@
 		1158B5E32F5FA3AF00308FF8 /* util-hex16.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "util-hex16.c"; path = "src/util-hex16.c"; sourceTree = "<group>"; };
 		1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-hexb.c"; path = "src/zone-atom-hexb.c"; sourceTree = "<group>"; };
 		1158B5E72F62031200308FF8 /* util-parseint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "util-parseint.h"; path = "src/util-parseint.h"; sourceTree = "<group>"; };
+		1158B5E82F69348300308FF8 /* zone-parse-header3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-header3.c"; path = "src/zone-parse-header3.c"; sourceTree = "<group>"; };
 		11D53A3D2F505D4000361606 /* fastzone */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fastzone; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -161,6 +163,7 @@
 		11D53A342F505D4000361606 = {
 			isa = PBXGroup;
 			children = (
+				1158B5E82F69348300308FF8 /* zone-parse-header3.c */,
 				1158B5E72F62031200308FF8 /* util-parseint.h */,
 				1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */,
 				1158B57C2F51658300308FF8 /* zone-atom-hexa.c */,
@@ -303,6 +306,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1158B5E92F69348300308FF8 /* zone-parse-header3.c in Sources */,
 				1158B5AC2F51658300308FF8 /* zone-parse-header2.c in Sources */,
 				1158B5E12F53D29900308FF8 /* zone-parse-token.c in Sources */,
 				1158B5AD2F51658300308FF8 /* zone-atom.c in Sources */,

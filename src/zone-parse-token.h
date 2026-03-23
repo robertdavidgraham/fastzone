@@ -59,12 +59,39 @@ static inline void parse_tokens_reset(parsetokens_t *t)
 /* Returns length of token ended by any of: ' ', '\t', '\r', '\n'
  * Consumes that token from the rolling state.
  */
-size_t parse_token_length(const char *data, size_t cursor, parsetokens_t *tokens);
+size_t parse_token_length2(const char *data, size_t cursor, parsetokens_t *tokens);
+
+static __attribute__((always_inline))
+size_t parse_token_length(const char *data, size_t cursor, parsetokens_t *tokens) {
+    size_t length = ctz64(tokens->mask_ws);
+    if (length == 0 || length >= tokens->avail)
+        return parse_token_length2(data, cursor, tokens);
+    else {
+        tokens->mask_st >>= length;
+        tokens->mask_ws >>= length;
+        tokens->avail    -= length;
+        return length;
+    }
+}
+
+
+size_t parse_space_length2(const char *data, size_t cursor, parsetokens_t *tokens);
 
 /* Returns length of run of only: ' ', '\t'
  * Consumes that run from the rolling state.
  */
-size_t parse_space_length(const char *data, size_t cursor, parsetokens_t *tokens);
+static __attribute__((always_inline))
+size_t parse_space_length(const char *data, size_t cursor, parsetokens_t *tokens) {
+    size_t length = ctz64(~tokens->mask_st);
+    if (length >= tokens->avail)
+        return parse_space_length2(data, cursor, tokens);
+    else {
+        tokens->mask_st >>= length;
+        tokens->mask_ws >>= length;
+        tokens->avail    -= length;
+        return length;
+    }
+}
 
 /* Consume an arbitrary number of bytes from the current rolling masks (no refill). */
 void parse_token_consume(size_t length, parsetokens_t *tokens);

@@ -38,8 +38,8 @@ static inline unsigned ctz64(uint64_t x)
 }
 
 #else
-static inline unsigned ctz32(unsigned x)  { return (unsigned)__builtin_ctz(x); }
-static inline unsigned ctz64(uint64_t x)  { return (unsigned)__builtin_ctzll(x); }
+static inline unsigned ctz32(unsigned x)  { if (x == 0) return 32; return (unsigned)__builtin_ctz(x); }
+static inline unsigned ctz64(uint64_t x)  { if (x == 0) return 64; return (unsigned)__builtin_ctzll(x); }
 #endif
 
 #endif
