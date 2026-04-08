@@ -247,7 +247,7 @@ scan_avx512(const char *data, size_t i, size_t maxlen_ignored)
 #endif /* SIMD_AVX512 */
 
 /* --------------------------------- NEON ----------------------------------- */
-#ifdef SIMD_NEON
+#ifdef SIMD_NEON64
   #include <arm_neon.h>
 static inline int neon_any_u8(uint8x16_t m)
 {
@@ -285,7 +285,7 @@ scan_neon(const char *data, size_t i, size_t maxlen_ignored)
         i += 16;
     }
 }
-#endif /* SIMD_NEON */
+#endif /* SIMD_NEON64 */
 
 /* --------------------------------- SVE2 ----------------------------------- */
 #ifdef SIMD_SVE2
@@ -418,7 +418,7 @@ zone_scan_space(const char *data, size_t i, size_t maxlen_ignored, unsigned *dep
 void zone_scan_space_init(simd_backend_t backend) {
     switch (backend) {
     case SIMD_AUTO:zone_scan_space_init(simd_get_best());break;
-    case SIMD_SCALAR: scanner = scan_scalar; break;
+    case SIMD_SCALAR1: scanner = scan_scalar; break;
     case SIMD_SWAR: scanner = scan_swar; break;
 #if defined(SIMD_SSE2)
     case SIMD_SSE2: scanner = scan_sse2; break;
@@ -432,8 +432,8 @@ void zone_scan_space_init(simd_backend_t backend) {
 #if defined(SIMD_AVX512)
     case SIMD_AVX512: scanner = scan_avx512; break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON: scanner = scan_neon; break;
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64: scanner = scan_neon; break;
 #endif
 #if defined(SIMD_SVE2)
     case SIMD_SVE2: scanner = scan_sve2; break;

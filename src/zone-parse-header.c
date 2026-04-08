@@ -73,7 +73,7 @@ zone_parse_header(const char *data, size_t cursor, size_t max,
     unsigned rrclass = 1;
 
     if (is_zone_space(data[cursor]))
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /*
      * Parse up to three fields until we find a TYPE
@@ -87,7 +87,7 @@ zone_parse_header(const char *data, size_t cursor, size_t max,
         /* ---- TTL ---- */
         if (field == 0 && is_digit(data[cursor])) {
             cursor = parse_ttl_seconds(data, cursor, max, &rrttl, &err);
-            cursor = zone_parse_space(data, cursor, max, out, depth);
+            cursor = zone_slow_space(data, cursor, max, out, depth);
             continue;
         }
         
@@ -110,7 +110,7 @@ zone_parse_header(const char *data, size_t cursor, size_t max,
         /* See if it's a `class` rather than a `type` */
         if (type_idx < 4) {
             rrclass = type_value;
-            cursor = zone_parse_space(data, cursor, max, out, depth);
+            cursor = zone_slow_space(data, cursor, max, out, depth);
             continue;
         }
         
@@ -126,7 +126,7 @@ zone_parse_header(const char *data, size_t cursor, size_t max,
          * Now that we've found the TYPE, strip as much
          * whitespace as we can.
          */
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
         return cursor;
     }
 
@@ -159,8 +159,11 @@ struct zone_type_test_case {
  * - test cases must start with a space
  */
 static const struct zone_type_test_case test_cases[] = {
-    /*{"    TYPE65280 \\# 4 DEADBEEF   ; unknown private use\n",
-        { 0, 0, 0, 65280, NULL, 14 }},*/
+    /* 15 */
+    {
+        "   300 IN TYPE65000 ( \\# 8 01020304 05060708 ) ; split hex\n",
+        { 0, 300, 1, 65000, NULL, 22 }
+    },
     /* 10 */
  
     {

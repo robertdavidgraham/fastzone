@@ -14,12 +14,17 @@ int zone_parse_quicktest(void);
 extern void zone_parse_header2_init(int simd);
 extern int zone_parse_header_quicktest(void);
 
+
 /* ------------------------------ expected project API ---------------------- */
 /* Provide these in your project headers; declared here as externs. */
 
 typedef struct wire_record_t {
     unsigned line_count;
-    size_t name_length;
+    
+    /* This is the `owner`, the first field in every record. We use this to
+     * skip past the name when looking at the contents of the wire-buffer,
+     * without having to parse it looking for the nul-terminator. */
+    size_t ownername_length;
     unsigned is_fqdn:1;
     
     struct {
@@ -44,6 +49,8 @@ typedef struct wire_record_t {
         unsigned value;
     } rrtype;
     
+    uint64_t *whitespace;
+    uint64_t *intoken;
 } wire_record_t;
 
 

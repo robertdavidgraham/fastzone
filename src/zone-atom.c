@@ -59,7 +59,7 @@ static inline int is_space_char(unsigned char c)
     return zone_space_table[c];
 }
 size_t
-zone_parse_space(const char *data, size_t cursor, size_t max,
+zone_slow_space(const char *data, size_t cursor, size_t max,
                   struct wire_record_t *out,
                   unsigned *depth) {
     if (!is_space_char(data[cursor])) {

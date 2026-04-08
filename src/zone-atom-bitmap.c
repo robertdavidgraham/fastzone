@@ -275,7 +275,7 @@ zone_atom_typelist_a(const char *data, size_t cursor, size_t max,
             PARSE_ERR(1, cursor, max, out);
         }
         
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
     }
     
 
@@ -370,7 +370,7 @@ zone_atom_nseclist_b(const char *data, size_t cursor, size_t max,
             bitmap[window][2 + block] |= (1 << (7 - bit % 8));
             
             cursor += length;
-            cursor = zone_parse_space(data, cursor, max, out, depth);
+            cursor = zone_slow_space(data, cursor, max, out, depth);
             if (data[cursor] == '\r' || data[cursor] == 'n')
                 break;
         }

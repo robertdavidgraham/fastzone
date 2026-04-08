@@ -154,7 +154,7 @@ size_t zone_atom_base64b(const char *data, size_t cursor, size_t max,
          * Consume any space after the BASE64 string. This may be
          * things like parentheses and comments, as well as
          * just normal space */
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
 
         /*
          * See if we've reached the end of the record.

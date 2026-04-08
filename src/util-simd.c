@@ -1,6 +1,7 @@
 #include "util-simd.h"
+#include <string.h>
 
-int g_zone_backend = SIMD_SCALAR;
+int g_zone_backend = SIMD_SCALAR1;
 
 #if SIMD_x86
 static inline int dns_cpu_has_sse2(void) {
@@ -24,7 +25,7 @@ static inline int dns_cpu_has_sse2(void) {
 
 #if defined(SIMD_ARM) && 0
 static inline int dns_cpu_has_neon(void) {
-#if SIMD_NEON
+#if SIMD_NEON64
   #if defined(__aarch64__)
     #if defined(__APPLE__)
       return 1; /* NEON/ASIMD mandatory on Apple arm64 */
@@ -51,9 +52,9 @@ simd_backend_t simd_get_best(void) {
 #if SIMD_SSE2
   if (dns_cpu_has_sse2()) return SIMD_SSE2;
 #endif
-#if SIMD_NEON
+#if SIMD_NEON64
   if (dns_cpu_has_neon())
-      return SIMD_NEON;
+      return SIMD_NEON64;
 #endif
   return SIMD_SWAR; /* good portable fast-path */
 }
@@ -78,11 +79,16 @@ int cpu_has_avx2(void) {
   return 0;
 #endif
 }
+const char *simd_current_name(void) {
+    return simd_name(g_zone_backend);
+}
 
-const char *simd_get_name(void) {
-    switch (g_zone_backend) {
-    case SIMD_SCALAR:
-        return "SCALAR";
+const char *simd_name(int backend) {
+    switch (backend) {
+    case SIMD_SCALAR1:
+        return "SCALAR1";
+    case SIMD_SCALAR2:
+        return "SCALAR2";
     case SIMD_SWAR:
         return "SWAR";
 #ifdef SIMD_SSE2
@@ -91,7 +97,7 @@ const char *simd_get_name(void) {
 #endif
 #ifdef SIMD_SSE42
     case SIMD_SSE42:
-        return "SSE4.2";
+        return "SSE42";
 #endif
 #ifdef SIMD_AVX2
     case SIMD_AVX2:
@@ -101,9 +107,13 @@ const char *simd_get_name(void) {
     case SIMD_AVX512:
         return "AVX512";
 #endif
-#ifdef SIMD_NEON
-    case SIMD_NEON:
-        return "NEON";
+#ifdef SIMD_NEON32
+    case SIMD_NEON32:
+        return "NEON32";
+#endif
+#ifdef SIMD_NEON64
+    case SIMD_NEON64:
+        return "NEON64";
 #endif
 #ifdef SIMD_SVE2
     case SIMD_SVE2:
@@ -116,4 +126,59 @@ const char *simd_get_name(void) {
     default:
         return "UNKNOWN";
     }
+}
+
+
+int simd_from_name(const char *name) {
+    if (strcmp(name, "SCALAR") == 0)
+        return SIMD_SCALAR1;
+    if (strcmp(name, "SCALAR1") == 0)
+        return SIMD_SCALAR1;
+    if (strcmp(name, "SCALAR2") == 0)
+        return SIMD_SCALAR1;
+    if (strcmp(name, "SWAR") == 0)
+        return SIMD_SWAR;
+#ifdef SIMD_SSE2
+    if (strcmp(name, "SSE2") == 0)
+        return SIMD_SSE2;
+#endif
+#ifdef SIMD_SSE42
+    if (strcmp(name, "SSE42") == 0)
+        return SIMD_SSE42;
+    if (strcmp(name, "SSE4.2") == 0)
+        return SIMD_SSE42;
+#endif
+#ifdef SIMD_AVX2
+    if (strcmp(name, "AVX2") == 0)
+        return SIMD_AVX2;
+    if (strcmp(name, "AVX256") == 0)
+        return SIMD_AVX2;
+#endif
+#ifdef SIMD_AVX512
+    if (strcmp(name, "SSE512") == 0)
+        return SIMD_SSE512;
+#endif
+#ifdef SIMD_NEON32
+    if (strcmp(name, "NEON") == 0)
+        return SIMD_NEON32;
+    if (strcmp(name, "NEON32") == 0)
+        return SIMD_NEON32;
+#endif
+#ifdef SIMD_NEON64
+    if (strcmp(name, "NEON") == 0)
+        return SIMD_NEON64;
+    if (strcmp(name, "NEON64") == 0)
+        return SIMD_NEON64;
+#endif
+#ifdef SIMD_SVE2
+    if (strcmp(name, "SVE2") == 0)
+        return SIMD_SVE2;
+#endif
+#ifdef SIMD_RISCVV
+    if (strcmp(name, "RISCVV") == 0)
+        return SIMD_RISCVV;
+    if (strcmp(name, "RVV") == 0)
+        return SIMD_RISCVV;
+#endif
+    return 0;
 }

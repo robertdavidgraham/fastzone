@@ -301,7 +301,7 @@ zone_atom_hexes_a(const char *data, size_t cursor, size_t max,
     if (data[cursor] == '-') {
         cursor++;
         /* and then move forward, per your convention */
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
         return cursor;
     }
 
@@ -317,7 +317,7 @@ zone_atom_hexes_a(const char *data, size_t cursor, size_t max,
 
         /* Respect zonefile whitespace/comments/paren depth */
         if (data[cursor] == ' ' || data[cursor] == '\t') {
-            cursor = zone_parse_space(data, cursor, max, out, depth);
+            cursor = zone_slow_space(data, cursor, max, out, depth);
             if (cursor > max)
                 return max + 1;
             if (cursor == max)
@@ -358,7 +358,7 @@ zone_atom_hexes_a(const char *data, size_t cursor, size_t max,
     }
 
     /* keep moving forward after the blob */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
     return cursor;
 }
 

@@ -18,7 +18,7 @@ static const char *backend_name(int backend) {
     case SIMD_AUTO:
         return backend_name(simd_get_best());
         break;
-    case SIMD_SCALAR: return "SCALAR";
+    case SIMD_SCALAR1: return "SCALAR";
     case SIMD_SWAR: return "SWAR";
 #if defined(SIMD_SSE2)
     case SIMD_SSE2: return "SSE2";
@@ -32,8 +32,8 @@ static const char *backend_name(int backend) {
 #if defined(SIMD_AVX512)
     case SIMD_AVX512: return "AVX512";
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON: return "NEON";
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64: return "NEON";
 #endif
 #if defined(SIMD_SVE2)
     case SIMD_SVE2: return "SVE2";
@@ -46,7 +46,7 @@ static const char *backend_name(int backend) {
 }
 
 void zone_init(int backend) {
-    fprintf(stderr, "[+] SIMD = %s\n", backend_name(backend));
+    //fprintf(stderr, "[+] SIMD = %s\n", backend_name(backend));
     zone_atom_init(backend);
     zone_scan_init(backend);
     zone_parse_init(backend);

@@ -50,9 +50,9 @@ static inline void store_be32(uint8_t *p, uint32_t v) {
 }
 
 /* “other” = neither space/tab nor alnum */
-static inline uint64_t hdr_other_mask(const struct hdrmasks *m) {
+/*static inline uint64_t hdr_other_mask(const struct hdrmasks *m) {
     return (m->spaces & m->alnum);
-}
+}*/
 
 /* ------------ scalar classifier (reference + default) ------------ */
 
@@ -367,7 +367,7 @@ hdr_classify_avx512_64(const char *data, size_t cursor, size_t max)
 }
 #endif /* SIMD_AVX512 */
 
-#ifdef SIMD_NEON
+#ifdef SIMD_NEON64
 #include <arm_neon.h>
 /* AArch64 NEON: cheap 16-byte classifier for zone_parse_header2
  *
@@ -471,7 +471,7 @@ hdr_classify_neon_64(const char *data, size_t cursor, size_t max) {
 }
 
 #endif /* AArch64 */
-#endif /* SIMD_NEON */
+#endif /* SIMD_NEON64 */
 
 #ifdef SIMD_SVE2
 /* Best-effort SVE2: do SVE compares/loads but pack mask via store+scalar.
@@ -562,7 +562,7 @@ zone_parse_header2_init(int simd)
 
     switch ((simd_backend_t)simd) {
     default:
-    case SIMD_SCALAR:
+    case SIMD_SCALAR1:
         g_hdr_classify = hdr_classify_scalar64;
         break;
 
@@ -590,8 +590,8 @@ zone_parse_header2_init(int simd)
         g_hdr_classify = hdr_classify_avx512_64;
         break;
 #endif
-#ifdef SIMD_NEON
-    case SIMD_NEON:
+#ifdef SIMD_NEON64
+    case SIMD_NEON64:
         g_hdr_classify = hdr_classify_neon_64;
         break;
 #endif
@@ -677,7 +677,7 @@ zone_parse_header2(const char *data, size_t cursor, size_t max,
                                     length,
                                     &rrtype);
     }
-    if (idx < 4) {
+    if (idx < 5) {
         err |= (idx == 0);
         
         /* it’s CLASS */

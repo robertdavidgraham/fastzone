@@ -21,7 +21,9 @@ static const uint8_t zmasks[48] = {
 
 /**
  * This is the hash "seed" that will lead to a "perfect-hash" in our
- * hash function, so that there are no collisions.
+ * hash function, so that there are no collisions. This needs to
+ * be recalculated when changing the table so that it runs
+ * fast at startup.
  */
 uint64_t seed = 1771950258;
 
@@ -89,23 +91,23 @@ static const struct zone_atom_type zone_atom_type_table[] = {
     { 3, "CH", 0, 0 },
     { 4, "HS", 0, 0 },
     
-    /* 4: generic TYPEddd handler (template: parse/format may be set later) */
+    /* 5: generic TYPEddd handler (template: parse/format may be set later) */
     { 0, "", 0, 0 },
     
     /* >=5: RR TYPE atoms (IANA registry assignments) */
     
     { 1,   "A",        zone_parse_A, 0 },
     { 2,   "NS",       zone_parse_NS, 0 },
-    { 3,   "MD",       0, 0 },
-    { 4,   "MF",       0, 0 },
-    { 5,   "CNAME",    zone_parse_CNAME, 0 },
+    { 3,   "MD",       zone_parse_NS, 0 },
+    { 4,   "MF",       zone_parse_NS, 0 },
+    { 5,   "CNAME",    zone_parse_NS, 0 },
     { 6,   "SOA",      zone_parse_SOA, 0 },
-    { 7,   "MB",       0, 0 },
-    { 8,   "MG",       0, 0 },
-    { 9,   "MR",       0, 0 },
+    { 7,   "MB",       zone_parse_NS, 0 },
+    { 8,   "MG",       zone_parse_NS, 0 },
+    { 9,   "MR",       zone_parse_NS, 0 },
     { 10,  "NULL",     0, 0 },
     { 11,  "WKS",      0, 0 },
-    { 12,  "PTR",      zone_parse_PTR, 0 },
+    { 12,  "PTR",      zone_parse_NS, 0 },
     { 13,  "HINFO",    0, 0 },
     { 14,  "MINFO",    0, 0 },
     { 15,  "MX",       zone_parse_MX, 0 },
@@ -116,7 +118,7 @@ static const struct zone_atom_type zone_atom_type_table[] = {
     { 20,  "ISDN",     0, 0 },
     { 21,  "RT",       0, 0 },
     { 22,  "NSAP",     0, 0 },
-    { 23,  "NSAP-PTR", 0, 0 },
+    { 23,  "NSAP-PTR", zone_parse_NS, 0 },
     { 24,  "SIG",      0, 0 },
     { 25,  "KEY",      0, 0 },
     { 26,  "PX",       0, 0 },
@@ -132,7 +134,7 @@ static const struct zone_atom_type zone_atom_type_table[] = {
     { 36,  "KX",       0, 0 },
     { 37,  "CERT",     0, 0 },
     { 38,  "A6",       0, 0 },
-    { 39,  "DNAME",    zone_parse_DNAME, 0 },
+    { 39,  "DNAME",    zone_parse_NS, 0 },
     { 40,  "SINK",     0, 0 },
     { 41,  "OPT",      0, 0 },
     { 42,  "APL",      0, 0 },
@@ -238,8 +240,6 @@ static int name_table_insert_all(void) {
      * from the hash-table.
      */
     for (unsigned i = 1; i < ZONE_ARRLEN(zone_atom_type_table); i++) {
-        if (i == 4)
-            continue; /* TYPEddd handler has no mnemonic */
         
         if (zone_atom_type_table[i].name[0] == 0)
             continue; /* shouldn't happen */
@@ -375,35 +375,39 @@ static const uint64_t CLASS_MASK = 0xffffffffff000000llu;
 
 unsigned
 zone_type2_lookup( const char * restrict name, size_t length, unsigned * restrict type_value) {
-    
-    /*
-     * Lookup the name
-     */
-    uint64_t hash = myhash(name, length);
-    unsigned idx = (unsigned)(hash & (TABLESIZE-1));
-    idx = name_table[idx].index;
-    if (idx) {
-        *type_value = zone_atom_type_table[idx].value;
-        return idx;
-    }
-    
-    /*
-     * Not found, maybe we have a TYPEddd instead.
-     */
+
     uint64_t input;
     memcpy(&input, name, 8);
-    if ((input & TYPE_MASK) == TYPE_NAME) {
-        uint16_t value = 0;
-        if (parse_u16(name + 4, length - 4, &value)) {
-            *type_value = value;
-            unsigned idx = zone_type2_lookup_val(value);
-            if (idx)
-                return idx;
-            else
-                return 4; /* unknown/not-found */
+    if ((input & TYPE_MASK) != TYPE_NAME) {
+        /*
+         * Lookup the name
+         */
+        uint64_t hash = myhash(name, length);
+        unsigned idx = (unsigned)(hash & (TABLESIZE-1));
+        idx = name_table[idx].index;
+        if (idx) {
+            *type_value = zone_atom_type_table[idx].value;
+            return idx;
+        }
+    } else {
+        /*
+         * Not found, maybe we have a TYPEddd instead.
+         */
+        uint64_t input;
+        memcpy(&input, name, 8);
+        if ((input & TYPE_MASK) == TYPE_NAME) {
+            uint16_t value = 0;
+            if (parse_u16(name + 4, length - 4, &value)) {
+                *type_value = value;
+                unsigned idx = zone_type2_lookup_val(value);
+                if (idx)
+                    return idx;
+                else
+                    return 5; /* unknown/not-found */
+            }
         }
     }
-
+    
     return 0;
 }
 

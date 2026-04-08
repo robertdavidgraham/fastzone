@@ -139,7 +139,9 @@ static uint32_t classify_scalar(const char *p, size_t max)
 
 /* Classifier produces invalidmask for 32 bytes: 1 => NOT [A-Za-z0-9_-] */
 typedef uint32_t (*zone_name4_classify32_fn)(const char *p, size_t max);
-static zone_name4_classify32_fn classify = classify_scalar;
+
+#define classify name_classify
+zone_name4_classify32_fn name_classify = classify_scalar;
 
 /* ============================ SIMD classifiers ============================ */
 /* These are the same as before, but they only return invalidmask and do NOT
@@ -246,7 +248,7 @@ static uint32_t classify_avx512(const char *p, size_t max)
 }
 #endif
 
-#ifdef SIMD_NEON
+#ifdef SIMD_NEON64
 #include <arm_neon.h>
 #if defined(__aarch64__) || defined(_M_ARM64)
 static inline uint16_t
@@ -298,7 +300,7 @@ classify_neon(const char *data, size_t max) {
 #else
 static uint32_t classify_neon(const char *p, size_t max) { return classify_scalar(p, max); }
 #endif
-#endif /* SIMD_NEON */
+#endif /* SIMD_NEON64 */
 
 #ifdef SIMD_RISCVV
 #include <riscv_vector.h>
@@ -379,7 +381,7 @@ classify32_riscvv_invalid(const char *p)
 /* ------------------------------ zone_atom_name4 --------------------------- */
 
 size_t
-zone_atom_name4(const char *data, size_t cursor, size_t max,
+zone_atom_name_fast(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out)
 {
     /* This fast function assumes simple names (no \escapes) that
@@ -417,14 +419,13 @@ zone_atom_name4(const char *data, size_t cursor, size_t max,
      */
     unsigned length = ctz64(mask);
     if (length == 0 || length >= 32)
-        return zone_atom_name5(data, cursor, max, out);
+        return zone_atom_name_slow(data, cursor, max, out);
     
     output[0] = (uint8_t)length; /* set label length */
 
     size_t offset = length + 1; /* next label start */
     
     if (output[offset] != '.') {
-        /* success */
         out->is_fqdn = 0;
         goto end;
     }
@@ -456,14 +457,165 @@ zone_atom_name4(const char *data, size_t cursor, size_t max,
 
 end:
     if (offset > 32 || !is_space_char(output[offset]))
-        return zone_atom_name5(data, cursor, max, out);
+        return zone_atom_name_slow(data, cursor, max, out);
+    out->wire.len += offset; /* overall name length */
+    size_t next = cursor + offset - 1;
+    return next;
+}
+
+#define likely(x)   __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
+
+static inline size_t
+zone_atom_name4b(const char *data, size_t cursor, size_t max,
+                struct wire_record_t *out)
+{
+    /* This fast function assumes simple names (no \escapes) that
+     * are shorter than 32 bytes. Any violations of these rules
+     * falls back to a slower function that handles longer and
+     * more complex names
+     */
+    const char *input = data + cursor;
+    unsigned char *output = out->wire.buf + out->wire.len;
+    
+    
+    /*
+     * Copy fixed 32 bytes first. It's off-by-one because labels
+     * on the wire are a PREFIX to the label, while the dots in
+     * text format are a SUFFIX.
+     */
+    memcpy(output + 1, input, 32);
+    
+    /*
+     * Classify all the bits, doing the simdson method of classifying
+     * everything first. We classify the next 32 bits as either
+     * valid name chars [a-zA-Z0-9_-] or something else. Invalid
+     * characteers are 1, valid 0.
+     */
+    uint64_t mask = classify(input, max);
+    mask |= (1ull << 32); /* add sentinel */
+    
+    /*
+     * Do special first label parsing
+     * - reject empty names
+     * - reject anything longer than 32 bytes
+     * - "reject" means going to the slow-path parser
+     * - end early if there's only one label, a common
+     *   case in zonefiles that assume an $ORIGIN.
+     */
+    size_t offset = 0;
+    unsigned length;
+    unsigned adjust;
+    int err = 0;
+    
+    length = ctz64(mask);
+    adjust = (length == 0);
+    mask >>= length + 1 - adjust;
+    output[offset] = length;
+    offset += length + 1 - adjust;
+    
+    length = ctz64(mask);
+    adjust = (length == 0);
+    mask >>= length + 1 - adjust;
+    output[offset] = length;
+    offset += length + 1 - adjust;
+
+    length = ctz64(mask);
+    adjust = (length == 0);
+    mask >>= length + 1 - adjust;
+    output[offset] = length;
+    offset += length + 1 - adjust;
+
+    length = ctz64(mask);
+    mask >>= length + 1;
+    output[offset] = length;
+    offset += length + 1;
+    
+    if (likely(length == 0)) {
+        out->is_fqdn = 1;
+        goto end;
+    } else if (output[offset] != '.') {
+        out->is_fqdn = 0;
+        goto end;
+    }
+
+
+    /*
+     * Loop through name, changing dot ending previous label
+     * to a length of the next label.
+     */
+    while (unlikely(length)) {
+        /* get this label's length */
+        length = ctz64(mask);
+        mask >>= length + 1;
+        
+        /* set this label's length */
+        output[offset] = length;
+        
+        /* move to next label */
+        offset += length + 1;
+        
+        /* are we done yet? */
+        if (length == 0) {
+            out->is_fqdn = 1;
+            break;
+        } else if (output[offset] != '.') {
+            out->is_fqdn = 0;
+            break;
+        }
+    }
+
+end:
+    if (offset > 32 || !is_space_char(output[offset]) || err)
+        return zone_atom_name_slow(data, cursor, max, out);
     out->wire.len += offset; /* overall name length */
     size_t next = cursor + offset - 1;
     return next;
 }
 
 size_t
-zone_parse_name0(const char *data, size_t cursor, size_t max,
+zone_parse_ownername(const char *data, size_t cursor, size_t max,
+                wire_record_t *out) {
+    size_t next;
+    
+    /*
+     * 1. A name consisting of just an `@` symbol refers to
+     * an empty prefix to which the $ORIGIN suffix will be
+     * added.
+     */
+    if (data[cursor] == '@') {
+        next = cursor + 1;
+        out->is_fqdn = 0;
+        goto append_origin;
+    }
+    
+    /*
+     * 2. Grab the name from the input.
+     */
+    size_t orig_wire_length = out->wire.len;
+    if (data[cursor] == '*') {
+        next = zone_atom_name_slow(data, cursor, max, out);
+    } else {
+        next = zone_atom_name_fast(data, cursor, max, out);
+    }
+    
+    
+    /*
+     * 3. If not fully-qualified (FQDN), then append
+     * the $ORIGIN.
+     */
+append_origin:
+    if (!out->is_fqdn) {
+        /* if not fully qualified it, append the origin */
+        wire_append_bytes(out, out->state.origin, out->state.origin_length);
+    }
+    out->ownername_length = out->wire.len - orig_wire_length;
+
+    return next; //zone_mask_skip_nospace1(data, cursor, max, next - cursor);
+}
+
+size_t
+zone_parse_atomname(const char *data, size_t cursor, size_t max,
                 wire_record_t *out) {
     size_t next;
     
@@ -482,10 +634,11 @@ zone_parse_name0(const char *data, size_t cursor, size_t max,
      * 2. Grab the name from the input.
      */
     if (data[cursor] == '*') {
-        next = zone_atom_name5(data, cursor, max, out);
+        next = zone_atom_name_slow(data, cursor, max, out);
     } else {
-        next = zone_atom_name4(data, cursor, max, out);
+        next = zone_atom_name_fast(data, cursor, max, out);
     }
+    
     
     /*
      * 3. If not fully-qualified (FQDN), then append
@@ -495,11 +648,11 @@ append_origin:
     if (!out->is_fqdn) {
         /* if not fully qualified it, append the origin */
         wire_append_bytes(out, out->state.origin, out->state.origin_length);
-        out->name_length += out->state.origin_length;
     }
     
-    return next; //zone_mask_skip_nospace1(data, cursor, max, next - cursor);
+    return next;
 }
+
 
 /* ---------------------- runtime SIMD backend selection ------------------ */
 
@@ -507,7 +660,7 @@ void zone_atom_name4_init(int backend) {
     /* Runtime selection of SIMD backend */
     switch (backend) {
     case SIMD_AUTO: zone_atom_name4_init(simd_get_best()); break;
-    case SIMD_SCALAR: classify = classify_scalar; break;
+    case SIMD_SCALAR1: classify = classify_scalar; break;
     case SIMD_SWAR: classify = classify_scalar; break;
 #if defined(SIMD_SSE2)
     case SIMD_SSE2: classify = classify_sse2; break;
@@ -521,8 +674,8 @@ void zone_atom_name4_init(int backend) {
 #if defined(SIMD_AVX512)
     case SIMD_AVX512: classify = classify_avx512; break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON: classify = classify_neon; break;
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64: classify = classify_neon; break;
 #endif
 #if defined(SIMD_SVE2)
     case SIMD_SVE2: classify = classify_sve2; break;
@@ -600,8 +753,9 @@ int zone_atom_name4_quicktest(void) {
         /*
          * Step 2: run the test case
          */
-        
-        size_t consumed = zone_atom_name4(input, 0, in_length, &out);
+        size_t orig_wire_length = out.wire.len;
+        size_t consumed = zone_atom_name_fast(input, 0, in_length, &out);
+        out.ownername_length = out.wire.len - orig_wire_length;
         
         /*
          * Step 3: validate the outputs
@@ -615,7 +769,7 @@ int zone_atom_name4_quicktest(void) {
             err++;
             continue;
         }
-        if (out.wire.len != exp_len) {
+        if (out.ownername_length != exp_len) {
             fprintf(stderr, "[-] name4:%d: output length mismatch, found %u, expected %u\n",
                     i, (unsigned)out.wire.len, (unsigned)exp_len);
             dump_wire(out.wire.buf, out.wire.len);

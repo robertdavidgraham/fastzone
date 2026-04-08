@@ -33,7 +33,7 @@
 #endif
 
 /* ARM */
-#if defined(SIMD_NEON)
+#if defined(SIMD_NEON64)
   #include <arm_neon.h>
 #endif
 #if defined(SIMD_SVE2)
@@ -317,7 +317,7 @@ static void parseexpire2_avx512(const uint8_t *p, expire2_parts_t *o, unsigned *
 #endif /* AVX512 */
 
 /* ------------------------------ NEON (AArch64) backend ------------------------------ */
-#if defined(SIMD_NEON)
+#if defined(SIMD_NEON64)
 
 static inline unsigned neon_all_digits_14(const uint8_t *p) {
   uint8x16_t v = vld1q_u8(p);
@@ -557,7 +557,7 @@ void zone_atom_expire2_init(simd_backend_t backend)
   if (backend == SIMD_AUTO) backend = simd_get_best();
 
   switch (backend) {
-    case SIMD_SCALAR:
+    case SIMD_SCALAR1:
       parseexpire2 = parseexpire2_scalar; break;
     case SIMD_SWAR:
       parseexpire2 = parseexpire2_swar;   break;
@@ -574,8 +574,8 @@ void zone_atom_expire2_init(simd_backend_t backend)
 #if defined(SIMD_AVX512)
     case SIMD_AVX512: parseexpire2 = parseexpire2_avx512; break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON:
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64:
       parseexpire2 = parseexpire2_neon;   break;
 #endif
 #if defined(SIMD_SVE2)
@@ -686,7 +686,7 @@ int zone_atom_expire2_quicktest(void)
   int fails = 0;
   uint8_t wbuf[32];
 
-  //zone_atom_expire2_init(SIMD_SCALAR); /* deterministic baseline */
+  //zone_atom_expire2_init(SIMD_SCALAR1); /* deterministic baseline */
 
   for (unsigned i = 0; i < (unsigned)(sizeof(tcs)/sizeof(tcs[0])); i++) {
     struct wire_record_t out;

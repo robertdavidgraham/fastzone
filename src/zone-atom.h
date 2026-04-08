@@ -31,7 +31,7 @@ size_t zone_atom_type(const char *data, size_t cursor, size_t max, struct wire_r
 size_t zone_atom_typelist_a(const char *data, size_t cursor, size_t max, struct wire_record_t *out, unsigned *depth);
 
 size_t zone_parse_finish(const char *data, size_t cursor, size_t max, struct wire_record_t *out, unsigned *depth);
-size_t zone_parse_space(const char *data, size_t cursor, size_t max, struct wire_record_t *out, unsigned *depth);
+size_t zone_slow_space(const char *data, size_t cursor, size_t max, struct wire_record_t *out, unsigned *depth);
 
 int zone_atom_hexb_selftest(void);
 int zone_atom_base64a_quicktest(void);

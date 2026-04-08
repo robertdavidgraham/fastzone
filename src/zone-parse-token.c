@@ -388,7 +388,7 @@ static void scan_avx512(const char *p, parsetokens_t *t)
 }
 #endif
 
-#if defined(SIMD_NEON)
+#if defined(SIMD_NEON64)
 #include <arm_neon.h>
 
 static inline uint32_t neon_movemask_u8(uint8x16_t vff00)
@@ -528,7 +528,7 @@ void parse_tokens_init(simd_backend_t backend)
     case SIMD_AUTO:
         parse_tokens_init(simd_get_best());
         break;
-    case SIMD_SCALAR:
+    case SIMD_SCALAR1:
         scanner = scan_scalar;
         break;
     case SIMD_SWAR:
@@ -554,8 +554,8 @@ void parse_tokens_init(simd_backend_t backend)
         scanner = scan_avx512;
         break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON:
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64:
         scanner = scan_neon;
         break;
 #endif
@@ -579,9 +579,11 @@ void parse_tokens_init(simd_backend_t backend)
 
 /* ---------------------- Optional convenience -------------------- */
 /* If you like, you can expose this helper in your header style: */
+#if 0
 static inline void parse_tokens_reset(parsetokens_t *t)
 {
     t->mask_st = 0;
     t->mask_ws = 0;
     t->avail   = 0;
 }
+#endif

@@ -187,12 +187,12 @@ static size_t scan_avx512(const char *p)
 
 #endif /* SIMD_AVX512 */
 
-#if defined(SIMD_NEON) || defined(SIMD_SVE2)
+#if defined(SIMD_NEON64) || defined(SIMD_SVE2)
 #  include <arm_neon.h>
 #endif
 
 /* ---- NEON (AArch64) ---- */
-#if defined(SIMD_NEON)
+#if defined(SIMD_NEON64)
 #  include <arm_neon.h>
 
 static inline uint32_t neon_movemask_u8(uint8x16_t vff00)
@@ -229,7 +229,7 @@ static size_t scan_neon(const char *p)
     }
 }
 
-#endif /* SIMD_NEON */
+#endif /* SIMD_NEON64 */
 
 /* ---- SVE2 (portable but simple): load vector, store, scalar locate first invalid ---- */
 #if defined(SIMD_SVE2)
@@ -288,7 +288,7 @@ static void zone_scan_nobase_init(simd_backend_t backend)
     case SIMD_AUTO:
         zone_scan_nobase_init(simd_get_best());
         break;
-    case SIMD_SCALAR:
+    case SIMD_SCALAR1:
         scanner = scan_scalar;
         break;
     case SIMD_SWAR:
@@ -314,8 +314,8 @@ static void zone_scan_nobase_init(simd_backend_t backend)
         scanner = scan_avx512;
         break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON:
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64:
         scanner = scan_neon;
         break;
 #endif
@@ -460,7 +460,7 @@ size_t zone_atom_base64c(const char *data, size_t cursor, size_t max,
          * Consume any space after the BASE64 string. This may be
          * things like parentheses and comments, as well as
          * just normal space */
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
 
         /*
          * See if we've reached the end of the record.
@@ -589,7 +589,7 @@ void zone_atom_base64c_init(int backend) {
             err |= 1;
         }
 
-        fprintf(stderr, "[+] loaded Turbo-BASE64\n");
+        //fprintf(stderr, "[+] loaded Turbo-BASE64\n");
     }
 #endif
 

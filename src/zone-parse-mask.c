@@ -19,8 +19,8 @@
  *
  * 3) RUNTIME DISPATCH MODEL
  *   - util-simd.h defines SIMD identifiers and an enum, including only supported values:
- *       SIMD_AUTO, SIMD_SCALAR, SIMD_SWAR, SIMD_SSE2, SIMD_SSE42, SIMD_AVX2,
- *       SIMD_AVX512, SIMD_NEON, SIMD_SVE2, SIMD_RISCVV, SIMD_MAX
+ *       SIMD_AUTO, SIMD_SCALAR1, SIMD_SWAR, SIMD_SSE2, SIMD_SSE42, SIMD_AVX2,
+ *       SIMD_AVX512, SIMD_NEON64, SIMD_SVE2, SIMD_RISCVV, SIMD_MAX
  *   - Each backend implementation is guarded by:
  *       #ifdef SIMD_FOO
  *       ... implementation ...
@@ -235,7 +235,7 @@ static void mask_avx512(const char *data, size_t cursor, uint64_t *mask, unsigne
 #endif
 
 /* ---------------------------- NEON (AArch64) ---------------------------- */
-#ifdef SIMD_NEON
+#ifdef SIMD_NEON64
   #include <arm_neon.h>
 static void mask_neon(const char *data, size_t cursor, uint64_t *mask, unsigned *avail)
 {
@@ -464,7 +464,7 @@ void zone_atom_mask_init(int simd)
 {
     switch (simd) {
     case SIMD_AUTO:zone_atom_mask_init(simd_get_best());break;
-    case SIMD_SCALAR:classify=mask_scalar;break;
+    case SIMD_SCALAR1:classify=mask_scalar;break;
     case SIMD_SWAR:classify=mask_swar;break;
 #ifdef SIMD_SSE2
     case SIMD_SSE2:classify=mask_sse2;break;
@@ -478,8 +478,8 @@ void zone_atom_mask_init(int simd)
 #ifdef SIMD_AVX512
     case SIMD_AVX512:classify=mask_avx512;break;
 #endif
-#ifdef SIMD_NEON
-    case SIMD_NEON:classify=mask_neon;break;
+#ifdef SIMD_NEON64
+    case SIMD_NEON64:classify=mask_neon;break;
 #endif
 #ifdef SIMD_SVE2
     case SIMD_SVE2:zone_atom_mask=mask_sve2;break;

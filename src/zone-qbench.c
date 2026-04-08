@@ -1,6 +1,7 @@
 /*
     Quick benchmarks
  */
+#include "zone-fast-classify.h"
 #include "zone-scan.h"
 #include "zone-atom-name.h"
 #include "zone-parse.h"
@@ -126,7 +127,7 @@ int quick_scan_benchmark(int backend) {
      */
     int err = zone_scan_quicktest();
     if (err) {
-        printf("[scan] %7s qtest failure\n", simd_get_name());
+        printf("[scan] %7s qtest failure\n", simd_current_name());
         return 1;
     }
     
@@ -186,7 +187,7 @@ int quick_scan_benchmark(int backend) {
     double gbps = (total_bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
     
     //printf("\nParsed %ld records in %.4f seconds\n", (long)total_records, elapsed);
-    printf("[scan] %7s %5.3f-GB/s\n", simd_get_name(), gbps);
+    printf("[scan] %7s %5.3f-GB/s\n", simd_current_name(), gbps);
     //printf("Throughput: \n", gbps);
     //printf("Records/sec: %.0f\n", total_records / elapsed);
     free(buf);
@@ -378,7 +379,7 @@ static size_t name4_quickperf(void) {
     
     for (i=0; dns_test_names[i]; i++) {
         out.wire.len = 0;
-        size_t consumed = zone_parse_name0(dns_test_names[i], 0, 40, &out);
+        size_t consumed = zone_parse_ownername(dns_test_names[i], 0, 40, &out);
         total += consumed;
     }
     
@@ -395,7 +396,7 @@ static size_t name5_quickperf(void) {
     
     for (i=0; dns_test_names[i]; i++) {
         out.wire.len = 0;
-        size_t consumed = zone_atom_name5(dns_test_names[i], 0, 40, &out);
+        size_t consumed = zone_atom_name_slow(dns_test_names[i], 0, 40, &out);
         total += consumed;
     }
     
@@ -417,7 +418,7 @@ int quick_parse_name4_benchmark(int backend) {
      */
     err = zone_atom_name4_quicktest();
     if (err) {
-        printf("[name4] %7s qtest failure\n", simd_get_name());
+        printf("[name4] %7s qtest failure\n", simd_current_name());
         return 1;
     }
 
@@ -437,7 +438,7 @@ int quick_parse_name4_benchmark(int backend) {
     double gbps = (bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
    
     //printf("Throughput: %.2f GB/s\n", gbps);
-    printf("[name4] %7s %5.3f-GB/s\n", simd_get_name(), gbps);
+    printf("%s  %8s  %5.2f-GB/s\n", "name4", simd_name(backend), gbps);
     
     return 0;
 }
@@ -456,7 +457,7 @@ int quick_parse_name5_benchmark(int backend) {
      */
     err = zone_atom_name5_quicktest();
     if (err) {
-        printf("[name5] %7s qtest failure\n", simd_get_name());
+        printf("[name5] %7s qtest failure\n", simd_current_name());
         return 1;
     }
 
@@ -476,7 +477,465 @@ int quick_parse_name5_benchmark(int backend) {
     double gbps = (bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
    
     //printf("Throughput: %.2f GB/s\n", gbps);
-    printf("[name5] %7s %5.3f-GB/s\n", simd_get_name(), gbps);
-    
+    //printf("[name5] %7s %5.3f-GB/s\n", simd_current_name(), gbps);
+    printf("%s  %8s  %5.2f-GB/s\n", "name4", simd_name(backend), gbps);
+
     return 0;
+}
+
+static const char classify_sample[] = ""
+"021solutions.se.        86400   IN      NS      ns1.loopia.se.\n"
+"021solutions.se.        86400   IN      NS      ns2.loopia.se.\n"
+"021solutions.se.        3600    IN      DS      12412 8 2 65E0EF1072BF15679BE209C92619925956182A46D4BB4154F2A21C77 CE9DF9A8\n"
+"021solutions.se.        3600    IN      RRSIG   DS 8 2 3600 20260116184920 20260102171920 60409 se. TgkmmdkvzbydCzq+sGrZ54EMmEsqVBUkavMlqxr2WmCPc6BzXzwF5HGu gNGjnY0b84S510G0/ObLug4KYxcQICmF+eUeQSfYNlH2BB4BOwksqhFI +2hDw76l0Cjn1BVqAX9ITeHdM1zdSuT1qVJWvED6qEoK1kxm8ckRQT1Q v34mvCTmV/lvr3wtJMlcQdy3G4yaca2I8pEggxeoYXTI/c9nbH2rt9cX u+jEmJUzzM99AKF8bPh93jX38Sp/BiV0XmcR33kjeMtGmbj6cBdoUKh9 iCxTQYpkt+iaLZRSLcYkCp7nIzTFzkZA2sgXb9No0mx6ll4TZYx4Y6c3 ZyKEAg==\n"
+"021solutions.se.        7200    IN      RRSIG   NSEC 8 2 7200 20260116184920 20260102171920 60409 se. VLxn9ohkRynL2Sa4Q2UrsTJ7CGit+Unoe2F06Mu9ql6b4W1SXX4BKg7x XE88Atq4aLFbHGR71G8x1dNHB4YAA8b+Mq1zKIrUBPn79Zeeqbrax0eR KBjw35dYrZiPh2GSnzM8cJoI13JOQKRB0nRyEzjk90QNgz+ut03VI+SK ARIeKRp9iPoWBEuOf4eXAyQ5xbdKh+Kv2IvVtkJsyQMLlr38YgUaMMQu L/KjQNiMGR/vNdkIoABWvtcLXWEE585LMqWf2HVOmFiCu88RrQ8Lf4sn gB/ezyyieLbfELkoOS8hFPLBKKJK6r1J1KaOw32ujljhjDsQqDxwaZLv zvo4Jg==\n"
+"021solutions.se.        7200    IN      NSEC    0224-742035.se. NS DS RRSIG NSEC\n"
+"0224-742035.se.         86400   IN      NS      ns.gallerian.org.\n"
+"0224-742035.se.         86400   IN      NS      ns2.gallerian.org.\n"
+"0224-742035.se.         7200    IN      RRSIG   NSEC 8 2 7200 20260116184920 20260102171920 60409 se. mLISiTi/TrpyYSJwSbnA3Gh/LzP132zXVDdiIXtiZXwliMYIzvB46qf1 9gDbTVpjr4uTIBvCCiFP05MnZifkoif9aJ8wC+AQGZh8gs833RB0HD2b ToAQxXHp2svXEGB1TvYjW9tvNRTBaUN8wfiPTpElTvaMX4PKBlvnQr5F /3/r2DtwLIFtG04shTyOvm4jw/zT071ILNV8b1/nhhqNXBT2H6xktFv/ esVmAIfe8Sz03zKa9X3xvxGJXM8cQLJoZNKVHgrCDhIsDza2+IVLj4kn CzHLhq5Ok1ClZl/gW3IH2m4RavWbGzfxOnV6D5vpIZu8+5NVTQ9sWT9N Rst9fg==\n"
+"0224-742035.se.         7200    IN      NSEC    023.se. NS RRSIG NSEC\n"
+"023.se.                 86400   IN      NS      ns01.one.com.\n"
+"023.se.                 86400   IN      NS      ns02.one.com.\n"
+"023.se.                 3600    IN      DS      1513 13 2 D2721B8375444E29079B98902DBF31F8F366E4FB970DD7C8B948C350 60D8968F\n"
+"023.se.                 3600    IN      RRSIG   DS 8 2 3600 20260116184920 20260102171920 60409 se. gbtCUQxxPb5C18MhFTME5VxcwCsxaBw9KShes9kCskKBpYp4WoN+wYww WDjKmBz5BE5ZBs4MJALGzVG5NoXFqh+gC/3f1LpZY4c7oY+AV6WpXYuV bOpnOZLcDGgei++e2qNy1A8rChS6L34Twu98KvXAVWMP0TEhP4uiXiJX KU+LC4SBg2qaVQA3VZVzhBs8ZgxzrE3PHQj5JzPLavIINVgiMUMkVKf0 GtAOaAH2dBk1m0rgRVPjAhaeUH7ermWZeCuudeTzNta7VWa/dfslcQ5z 8asD6HEtdgrI8JEQnL95Jmj8g9//MuFR8pfVwTrxHqfhno4hPKAnAL64 6k+zFg==\n"
+"023.se.                 7200    IN      RRSIG   NSEC 8 2 7200 20260116184920 20260102171920 60409 se. gMSr81z1zvGI78TopiDJ27XZsIxR8dTnlaCBcmw/auJIYU48pLu9koY+ UqXmJ8UxxSc9/pQVdorwkgQ+IajqNnFvL7OMlWb2CFj2+Y8zm603fHQD 7VMXTe9ycauvWdTFds018nf/0ga0iIdSHXG54YWgPinfcWJkI/XfXK1a OOils00/cv8ciizHomQkxf5oQFgB139te308mFRDIwrOk4LhxD5Z5tvR lzEtGRFOSfxnZxssIE+lG2pQSdoTpE0YL37vG5GnD1p2dGL5z0e6fbtB j3tLM2wXiXnx+V0JZXGofOcTY1yC2JzlUW2hOPe3fcyDfXulivZZLd5C ApUk/g==\n";
+
+
+
+/**
+ * Utility function to give an aligned buffer
+ */
+static void* aligned_malloc(size_t size, size_t alignment) {
+    if (alignment == 0) return NULL;
+    size_t offset = alignment + sizeof(void*);
+    void* p1 = malloc(size + offset);
+    if (!p1) return NULL;
+    void* p2 = (void*)(((uintptr_t)p1 + offset) & ~(alignment - 1));
+    ((void**)p2)[-1] = p1;  // Store original pointer
+    return p2;
+}
+
+static uint64_t bench_classify(int backend) {
+    
+    /* Select the SIMD backend, like SSE2, AVX2, NEON, SVE2, etc. */
+    zone_fast_classify_init(backend);
+    
+    /* Allocate a buffer to test with */
+    size_t max = 1024*1024;
+    char *buf = aligned_malloc(max+1024, 64);
+    
+    /* Fill with sample data */
+    static const size_t chunk_size = sizeof(classify_sample) - 1;
+    for (size_t cursor=0; cursor < max; cursor += chunk_size) {
+        memcpy(buf + cursor, classify_sample, chunk_size);
+    }
+    
+    /* Create the token-tapes */
+    tokentape_t *whitespace = malloc(max/64 + 2);
+    tokentape_t *intoken = malloc(max/64 + 2);
+    
+    /* pseudo-variable to prevent optimizations */
+    uint64_t total = 0;
+    
+    /* Count total bytes for reporting results */
+    uint64_t total_bytes = 0;
+    
+    /*
+     * START - take the high-resolution timestamp at the start
+     */
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    
+    /*
+     * BENCHMARK - call the benchmarked function */
+    for (unsigned n=0; n<10000; n++) {
+        zone_fast_classify(buf, max, whitespace, intoken);
+        total += whitespace[max/64] + intoken[max/64];
+        total_bytes += max;
+    }
+    
+    /*
+     * STOP
+     */
+    gettimeofday(&end, NULL);
+    
+    /*
+     * REPORT the results
+     */
+    double elapsed = (end.tv_sec - start.tv_sec) +
+                    (end.tv_usec - start.tv_usec) / 1000000.0;
+    double gbps = (total_bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
+    printf("%s  %8s  %5.2f-GB/s\n", "classify", simd_name(backend), gbps);
+    
+    /*
+     * free up buffers
+     */
+    free(((void**)buf)[-1]);
+    free(whitespace);
+    free(intoken);
+    
+    return total;
+}
+
+static uint64_t
+tokenize_buffer(const char *data, size_t max, tokentape_t *whitespace, tokentape_t *intoken, uint64_t *total_tokens) {
+    size_t cursor = 0;
+    uint64_t count_tokens = 0;
+    
+    while (cursor < max) {
+        size_t len;
+        len = classified_length(intoken, cursor);
+        len += classified_length(whitespace, cursor+len);
+        /*if (len == 0 && data[cursor+len] != '\n')
+            printf("%.20s\n", data + cursor + len - 10);*/
+        len += (len == 0);
+        cursor += len;
+        count_tokens++;
+    }
+    
+    *total_tokens += count_tokens;
+    return cursor;
+}
+
+static uint64_t bench_tokenize(int backend) {
+    
+    /* Select the SIMD backend, like SSE2, AVX2, NEON, SVE2, etc. */
+    zone_fast_classify_init(backend);
+    
+    /* Allocate a buffer to test with */
+    size_t max = 1024*1024;
+    char *buf = aligned_malloc(max+1024, 64);
+    
+    /* Fill with sample data */
+    static const size_t chunk_size = sizeof(classify_sample) - 1;
+    for (size_t cursor=0; cursor < max; cursor += chunk_size) {
+        memcpy(buf + cursor, classify_sample, chunk_size);
+    }
+    
+    /* Create the token-tapes */
+    tokentape_t *whitespace = malloc(max/sizeof(uint64_t) + 2);
+    tokentape_t *intoken = malloc(max/sizeof(uint64_t) + 2);
+    
+    /* pseudo-variable to prevent optimizations */
+    uint64_t total = 0;
+    
+    /* Count total bytes for reporting results */
+    uint64_t total_bytes = 0;
+    
+    /*
+     * Classify things
+     */
+    zone_fast_classify(buf, max, whitespace, intoken);
+    
+    /*
+     * START - take the high-resolution timestamp at the start
+     */
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    
+    /*
+     * BENCHMARK - call the benchmarked function */
+    uint64_t total_tokens = 0;
+    for (unsigned n=0; n<10000; n++) {
+        total_bytes += tokenize_buffer(buf, max, whitespace, intoken, &total_tokens);
+    }
+    
+    /*
+     * STOP
+     */
+    gettimeofday(&end, NULL);
+    
+    /*
+     * REPORT the results
+     */
+    double elapsed = (end.tv_sec - start.tv_sec) +
+                    (end.tv_usec - start.tv_usec) / 1000000.0;
+    double gbps = (total_bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
+    double tps = (total_tokens / (1024.0 * 1024.0 * 1024.0)) / elapsed;
+    printf("%s  %8s  %5.2f-GB/s %4.2f-GT/s\n", "tokenize", simd_name(backend), gbps, tps);
+    
+    /*
+     * free up buffers
+     */
+    free(((void**)buf)[-1]);
+    free(whitespace);
+    free(intoken);
+    
+    return total_bytes;
+}
+
+static uint64_t bench_lexifize(int backend) {
+    
+    /* Select the SIMD backend, like SSE2, AVX2, NEON, SVE2, etc. */
+    zone_fast_classify_init(backend);
+    
+    /* Allocate a buffer to test with */
+    size_t max = 1024*1024;
+    char *buf = aligned_malloc(max+1024, 64);
+    
+    /* Fill with sample data */
+    static const size_t chunk_size = sizeof(classify_sample) - 1;
+    for (size_t cursor=0; cursor < max; cursor += chunk_size) {
+        memcpy(buf + cursor, classify_sample, chunk_size);
+    }
+    
+    /* Create the token-tapes */
+    tokentape_t *whitespace = malloc(max/sizeof(uint64_t) + 2);
+    tokentape_t *intoken = malloc(max/sizeof(uint64_t) + 2);
+    
+    /* pseudo-variable to prevent optimizations */
+    uint64_t total = 0;
+    
+    /* Count total bytes for reporting results */
+    uint64_t total_bytes = 0;
+    
+    
+    /*
+     * START - take the high-resolution timestamp at the start
+     */
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    
+    /*
+     * BENCHMARK - call the benchmarked function */
+    uint64_t total_tokens = 0;
+    for (unsigned n=0; n<10000; n++) {
+        intoken[5] = 11;
+        zone_fast_classify(buf, max, whitespace, intoken);
+        total_bytes += tokenize_buffer(buf, max, whitespace, intoken, &total_tokens);
+    }
+    
+    /*
+     * STOP
+     */
+    gettimeofday(&end, NULL);
+    
+    /*
+     * REPORT the results
+     */
+    double elapsed = (end.tv_sec - start.tv_sec) +
+                    (end.tv_usec - start.tv_usec) / 1000000.0;
+    double gbps = (total_bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
+    double tps = (total_tokens / (1024.0 * 1024.0 * 1024.0)) / elapsed;
+    printf("%s  %8s  %5.2f-GB/s %4.2f-GT/s\n", "tokenize", simd_name(backend), gbps, tps);
+    
+    /*
+     * free up buffers
+     */
+    free(((void**)buf)[-1]);
+    free(whitespace);
+    free(intoken);
+    
+    return total_bytes;
+}
+
+/**
+ * Simple deterministic random number generator.
+ * LCG: x_{n+1} = (a * x_n + c) mod m, with m = 2^32 (implicit for uint32_t)
+ */
+static unsigned int rand_lcg(unsigned int *state) {
+    const unsigned int a = 1664525U;
+    const unsigned int c = 1013904223U;
+    *state = a * *state + c;
+    return *state;
+}
+
+
+/**
+ * Createsa buffer with variable length integers separated by variable length spaces.
+ * Numbers average 4 digits, and spaces are single but 10% double spaces.
+ */
+static char *build_integer_buffer(size_t max) {
+    /* for the simple deterministic LCG random number generator */
+    unsigned state = 12345;
+    
+    /* caller must free buffer */
+    char *data = malloc(max + 128);
+    for (size_t i=0; i<max; ) {
+        unsigned digit_count = 3 + rand_lcg(&state) % 3;
+        unsigned space_count = 1 + ((rand_lcg(&state) % 10) == 1);
+        for (size_t d = 0; d < digit_count; d++) {
+            data[i++] = '0' + (rand_lcg(&state) % 10);
+        }
+        for (size_t s = 0; s < space_count; s++) {
+            data[i++] = ' ';
+        }
+    }
+    memcpy(data + max, "\n x \n x \n", 9);
+    return data;
+}
+
+#include "util-parseint.h"
+
+
+static uint64_t
+parseint1_buffer(const char *data, size_t max, tokentape_t *whitespace, tokentape_t *intoken, uint64_t *pseudo) {
+    size_t cursor = 0;
+    uint64_t tmp = 0;
+    int err = 0;
+    
+    if (parse_integer_selftest()) {
+        fprintf(stderr, "[-] selftewt.parse_integer1: failed\n");
+        exit(1);
+    }
+    
+    while (cursor < max) {
+        size_t len;
+        len = classified_length(intoken, cursor);
+
+        tmp += parse_integer(data + cursor, len, &err);
+
+        len += classified_length(whitespace, cursor+len);
+        len += (len == 0);
+        cursor += len;
+    }
+    
+    *pseudo = tmp + err;
+    return cursor;
+}
+
+static inline uint64_t
+parse_integer2(const char *data, size_t length, int *err) {
+    /* Accumlate errors in case of a bad length. This won't stop
+     * parsing, but will indicate the result is malformed. */
+    *err |= (length == 0);
+    *err |= (length > 8);
+
+    uint64_t result = 0;
+    for (unsigned i=0; i<length; i++) {
+        char c = data[i];
+        *err |= (c < '0' || '9' < c);
+        result = result * 10 + c - '0';
+    }
+    
+    return result;
+}
+
+
+static uint64_t
+parseint2_buffer(const char *data, size_t max, tokentape_t *whitespace, tokentape_t *intoken, uint64_t *pseudo) {
+    size_t cursor = 0;
+    uint64_t tmp = 0;
+    int err = 0;
+    while (cursor < max) {
+        size_t len;
+        len = classified_length(intoken, cursor);
+
+        tmp += parse_integer2(data + cursor, len, &err);
+
+        len += classified_length(whitespace, cursor+len);
+        len += (len == 0);
+        cursor += len;
+    }
+    
+    *pseudo = tmp + err;
+    return cursor;
+}
+
+static uint64_t bench_parseint(int backend, unsigned testcase) {
+    
+    /* Select the SIMD backend, like SSE2, AVX2, NEON, SVE2, etc. */
+    zone_fast_classify_init(backend);
+    
+    /* Allocate a buffer to test with */
+    size_t max = 1024*1024;
+    char *buf = build_integer_buffer(max);
+    
+    /* Create the token-tapes */
+    tokentape_t *whitespace = malloc(max/sizeof(uint64_t) + 2);
+    tokentape_t *intoken = malloc(max/sizeof(uint64_t) + 2);
+
+    /* Count total bytes for reporting results */
+    uint64_t total_bytes = 0;
+    
+    /*
+     * Classify things
+     */
+    zone_fast_classify(buf, max, whitespace, intoken);
+    
+    /*
+     * START - take the high-resolution timestamp at the start
+     */
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    
+    /*
+     * BENCHMARK - call the benchmarked function */
+    uint64_t pseudo = 0;
+    for (unsigned n=0; n<10000; n++) {
+        uint64_t tmp = 0;
+        switch (testcase) {
+        case 1:
+            total_bytes += parseint1_buffer(buf, max, whitespace, intoken, &tmp);
+            break;
+        case 2:
+            total_bytes += parseint2_buffer(buf, max, whitespace, intoken, &tmp);
+            break;
+        }
+        pseudo += tmp;
+    }
+    
+    /*
+     * STOP
+     */
+    gettimeofday(&end, NULL);
+    
+    /*
+     * REPORT the results
+     */
+    double elapsed = (end.tv_sec - start.tv_sec) +
+                    (end.tv_usec - start.tv_usec) / 1000000.0;
+    double gbps = (total_bytes / (1024.0 * 1024.0 * 1024.0)) / elapsed;
+    printf("parseint%u  %8s  %5.2f-GB/s\n", testcase, simd_name(backend), gbps);
+    
+    /*
+     * free up buffers
+     */
+    free(buf);
+    
+    return total_bytes + pseudo;
+}
+
+/* ------------------------------------------------------------------------ */
+void zone_quick_benchmarks(void) {
+    int i;
+    uint64_t pseudo = 0;
+
+    printf("--- lex ---\n");
+    pseudo += bench_tokenize(SIMD_NEON64);
+
+    printf("--- tokenize ---\n");
+    pseudo += bench_tokenize(SIMD_SCALAR2);
+
+    printf("--- parseint branchless ---\n");
+    pseudo += bench_parseint(SIMD_SCALAR2, 1);
+
+    printf("--- parseint simple ---\n");
+    pseudo += bench_parseint(SIMD_SCALAR2, 2);
+
+    printf("--- classify ---\n");
+    for (i=1; i<SIMD_MAX; i++) {
+        pseudo += bench_classify(i);
+    }
+
+    printf("--- lex/tokenize ---\n");
+    pseudo += bench_tokenize(SIMD_SCALAR2);
+
+    printf("--- fast name ---\n");
+    for (i=1; i<SIMD_MAX; i++) {
+        pseudo += quick_parse_name4_benchmark(i);
+    }
+
+    printf("--- slow name ---\n");
+    for (i=1; i<SIMD_MAX; i++) {
+        pseudo += quick_parse_name5_benchmark(i);
+    }
+
+    
+
+    printf("--- pseudo=%llu\n", pseudo);
 }

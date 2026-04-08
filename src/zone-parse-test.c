@@ -1,5 +1,6 @@
 #include "zone-parse.h"
 #include "zone-parse-record.h"
+#include "zone-fast-classify.h"
 #include <string.h>
 #include <assert.h>
 
@@ -214,11 +215,13 @@ static const uint8_t exp_tlsa_2_0_1_short[] = { 0x02,0x00,0x01, 0xDE,0xAD,0xBE,0
 
 /* --- array of testcases --- */
 static const struct tc zone_rr_major_tests[] = {
+
     { "_https.example.com. 3600 IN HTTPS 1 . alpn=\"h2,h3\" port=443 ipv4hint=192.0.2.1,198.51.100.42\n",
       exp_https_prio1_root_alpn_port_ipv4hint, sizeof(exp_https_prio1_root_alpn_port_ipv4hint) },
 
     { "alias.example.com. 600 IN CNAME canonical.example.net.\n",
       exp_cname_canonical_example_net, sizeof(exp_cname_canonical_example_net) },
+
     /* A */
     { "www.example.com. 3600 IN A 192.0.2.1\n",
       exp_a_192_0_2_1, sizeof(exp_a_192_0_2_1) },
@@ -599,8 +602,11 @@ static const struct tc tc_types2[] = {
     {0}
 };
 
+typedef size_t (*PFN_PARSE_RECORD)(const char *data, size_t cursor, size_t max,
+                                   zone_state_t *state, wire_record_t *out);
+
 int
-zone_parse_quicktest1(const struct tc *testcases) {
+zone_parse_quicktest1(const struct tc *testcases, PFN_PARSE_RECORD parse_record) {
     /* Expected wire format in these tests is:
      *   NAME | TYPE | CLASS | TTL | RDLENGTH | RDATA
      *
@@ -626,18 +632,24 @@ zone_parse_quicktest1(const struct tc *testcases) {
         unsigned char wirebuf[65536+1024];
         out.wire.buf = wirebuf;
         out.wire.max = 65536;
-
+        
         state.line_number = i;
         state.line_offset = 0;
         const char *data = test->contents;
         size_t max = strlen(test->contents);
         
+        uint64_t whitespace[16];
+        uint64_t intoken[16];
+        zone_fast_classify(data, max, whitespace, intoken);
+        out.whitespace = whitespace;
+        out.intoken = intoken;
+        
         /*
          * Call the tested function to parse the record.
          */
-        size_t cursor = zone_parse_record(data, 0, max, &state, &out);
+        size_t cursor = parse_record(data, 0, max, &state, &out);
         
-        const unsigned char *out_wire = out.wire.buf + out.name_length + 8;
+        const unsigned char *out_wire = out.wire.buf + out.ownername_length + 8;
         size_t out_len = out_wire[0]<<8 | out_wire[1];
         out_wire += 2;
         
@@ -682,8 +694,11 @@ int
 zone_parse_quicktest(void) {
     int err = 0;
     
-    err += zone_parse_quicktest1(zone_rr_major_tests);
-    err += zone_parse_quicktest1(tc_types2);
+    err += zone_fast_classify_quicktest();
+    err += zone_parse_quicktest1(zone_rr_major_tests, zone_fast_record);
+    err += zone_parse_quicktest1(tc_types2, zone_fast_record);
+    err += zone_parse_quicktest1(zone_rr_major_tests, zone_slow_record);
+    err += zone_parse_quicktest1(tc_types2, zone_slow_record);
     
     return err;
 }

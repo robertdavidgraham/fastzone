@@ -1,3 +1,32 @@
+/*
+    SIMD utilities
+ 
+ In my code, I want to select from a number of SIMD backends -- not simply
+ choose the best at runtime, but to select different ones to benchmark against.
+ 
+ * On ARM, I want to test NEON and SVE2 against non-SIMD.
+ * On x86, I want to test SSE2, AVX2, and AVX512.
+ * I want to include RISCVV, even though that SIMD isn't widely
+   supported or has a stable interface.
+ * In the future, I want to support IBM Power, as IBM continues to support
+   it as a Tier-1 Linux systme.
+ * In the future, I want to support Loongson, as China is trying to push
+   it into a Tier-1 Linux system.
+ 
+ ARM NEON is slightly different on 32-bit and 64-bit architectures. Hence,
+ I do NEON32 and NEON64 as different choices.
+ 
+ This code uses the trick of #defining enums as themselves, so you
+ can test for it either way, with the preprocessor or with code.
+ 
+ You can loop from [1..SIMD_MAX] to enumerate all the ones supported
+ on the platform. The value 0 is SIMD_AUTO, which automatially chooses
+ the best one.
+ 
+ Both Windows and Linux/Apple are supported.
+ 
+ 
+ */
 #ifndef SIMD_H
 #define SIMD_H
 #include "util-ctz.h"
@@ -29,9 +58,9 @@ extern int g_zone_backend;
 /* =========================
  * Always available
  * ========================= */
-#undef SIMD_SCALAR
-#define SIMD_SCALAR SIMD_SCALAR
-#define SIMD_SWAR   SIMD_SWAR
+#define SIMD_SCALAR1    SIMD_SCALAR1
+#define SIMD_SCALAR2    SIMD_SCALAR2
+#define SIMD_SWAR       SIMD_SWAR
 
 
 /* =========================
@@ -69,7 +98,7 @@ extern int g_zone_backend;
 
 /* NEON is baseline on AArch64 */
 #if defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
-  #define SIMD_NEON SIMD_NEON
+  #define SIMD_NEON64 SIMD_NEON64
 #endif
 
 /* SVE2 (must be enabled in -march) */
@@ -99,7 +128,8 @@ extern int g_zone_backend;
 
 typedef enum zone_backend {
   SIMD_AUTO = 0,
-  SIMD_SCALAR,
+  SIMD_SCALAR1,
+  SIMD_SCALAR2,
   SIMD_SWAR,
 #ifdef SIMD_SSE2
   SIMD_SSE2,
@@ -113,8 +143,11 @@ typedef enum zone_backend {
 #ifdef SIMD_AVX512
   SIMD_AVX512,
 #endif
-#ifdef SIMD_NEON
-  SIMD_NEON,
+#ifdef SIMD_NEON32
+  SIMD_NEON32,
+#endif
+#ifdef SIMD_NEON64
+  SIMD_NEON64,
 #endif
 #ifdef SIMD_SVE2
   SIMD_SVE2,
@@ -129,6 +162,8 @@ typedef enum zone_backend {
 
 simd_backend_t simd_get_best(void);
 
-const char *simd_get_name(void);
+const char *simd_current_name(void);
+const char *simd_name(int backend);
+int simd_from_name(const char *name);
 
 #endif

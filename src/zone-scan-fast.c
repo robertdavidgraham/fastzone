@@ -65,7 +65,7 @@ static size_t scan_sse2(const char *data, size_t i, size_t len) {
 }
 #endif
 
-#if defined(SIMD_NEON)
+#if defined(SIMD_NEON64)
 static size_t scan_neon(const char *data, size_t i, size_t len) {
     const uint8x16_t paren = vdupq_n_u8('(');
     const uint8x16_t semi = vdupq_n_u8(';');
@@ -160,7 +160,7 @@ void zone_scan_fast_init(simd_backend_t backend) {
     case SIMD_AUTO:
         zone_scan_fast_init(simd_get_best());
         break;
-    case SIMD_SCALAR:
+    case SIMD_SCALAR1:
         scanner = scan_scalar;
         break;
     case SIMD_SWAR:
@@ -186,8 +186,8 @@ void zone_scan_fast_init(simd_backend_t backend) {
         scanner = scan_avx2;
         break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON:
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64:
         scanner = scan_neon;
         break;
 #endif

@@ -61,19 +61,19 @@ zone_parse_GENERIC(const char *data, size_t cursor, size_t max,
         return PARSE_ERR(ZONE_ERROR_EXPECTED_GENERIC, cursor, max, out);
     } else
         cursor += 2;
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
     
     /*
      * Get a count of the number of bytes, which is redundant,
      */
     cursor = parse_int(data, cursor, max, &length, out);
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /*
      * Get the hex encoding of the wire rrdata format.
      */
     cursor = zone_atom_hexes_a(data, cursor, max, out, depth);
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -89,19 +89,19 @@ zone_parse_DNSKEY(const char *data, size_t cursor, size_t max,
 
     /* typical: 257 (KSK) */
     cursor = zone_atom_int16(data, cursor, max, out);      /* flags */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 3 (DNSSEC) */
     cursor = zone_atom_int8(data, cursor, max, out);       /* protocol */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 8 (RSASHA256), 13 (ECDSAP256SHA256), 15 (ED25519) */
     cursor = zone_atom_int8(data, cursor, max, out);       /* algorithm */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: AwEAAc... (base64, often split with whitespace/parentheses) */
     cursor = zone_atom_base64a(data, cursor, max, out, depth); /* public key (remainder) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -117,39 +117,39 @@ zone_parse_RRSIG(const char *data, size_t cursor, size_t max,
 
     /* typical: A, AAAA, MX, SOA, ... (type covered) */
     cursor = zone_atom_type(data, cursor, max, out);       /* type covered (u16 in wire) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 13 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* algorithm */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 2 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* labels */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 3600 */
     cursor = zone_atom_int32(data, cursor, max, out);      /* original TTL */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 20260206120000 (YYYYMMDDHHMMSS) */
     cursor = zone_atom_expire2(data, cursor, max, out);     /* signature expiration (u32 in wire) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 20260106120000 (YYYYMMDDHHMMSS) */
     cursor = zone_atom_expire2(data, cursor, max, out);     /* signature inception (u32 in wire) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 60485 */
     cursor = zone_atom_int16(data, cursor, max, out);      /* key tag */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: signer.example.com. */
     cursor = zone_atom_name(data, cursor, max, out);       /* signer name */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: base64 signature, often split */
     cursor = zone_atom_base64c(data, cursor, max, out, depth); /* signature (remainder) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -164,11 +164,11 @@ zone_parse_NSEC(const char *data, size_t cursor, size_t max,
 
     /* typical: next.example.com. */
     cursor = zone_atom_name(data, cursor, max, out);       /* next domain name */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: A NS SOA MX RRSIG NSEC DNSKEY (type bitmap, may wrap lines) */
     cursor = zone_atom_typelist_a(data, cursor, max, out, depth); /* remainder */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -200,15 +200,15 @@ zone_parse_NSEC3(const char *data, size_t cursor, size_t max,
 
     /* typical: 1 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* hash algorithm */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 0 or 1 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* flags */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 10 */
     cursor = zone_atom_int16(data, cursor, max, out);      /* iterations */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: -  (or base16/base32-ish salt depending on your atom policy) */
     if (data[cursor] == '-') {
@@ -217,15 +217,15 @@ zone_parse_NSEC3(const char *data, size_t cursor, size_t max,
     } else {
         cursor = zone_atom_hexl_a(data, cursor, max, out);       /* salt bytes (supports '-') */
     }
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 2VPTU5TIMAMQ0GJ... (next hashed owner name, base32hex) */
     cursor = zone_atom_nsec3_hash(data, cursor, max, out); /* next hashed name */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: A NS SOA MX RRSIG NSEC3PARAM (type bitmap, may wrap) */
     cursor = zone_atom_typelist_a(data, cursor, max, out, depth); /* remainder */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -243,15 +243,15 @@ zone_parse_IPSECKEY(const char *data, size_t cursor, size_t max,
     
     /* typical: 10 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* precedence */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 0 (none), 1 (IPv4), 2 (IPv6), 3 (domain name) */
     cursor = zone_atom_int8x(data, cursor, max, out, &gwtype);       /* gateway type */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 0 (no key), 1 (DSS), 2 (RSA), ... */
     cursor = zone_atom_int8(data, cursor, max, out);       /* algorithm */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: . | 192.0.2.1 | 2001:db8::1 | gw.example.com. */
     /* Type 1/2/3 parse their respective atoms. Those atoms typically stop on
@@ -274,7 +274,7 @@ zone_parse_IPSECKEY(const char *data, size_t cursor, size_t max,
         /* error TODO: error */
         break;
     }
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: base64 key material, may wrap */
     if (data[cursor] == '-') {
@@ -282,7 +282,7 @@ zone_parse_IPSECKEY(const char *data, size_t cursor, size_t max,
     } else {
         cursor = zone_atom_base64a(data, cursor, max, out, depth);  /* public key (remainder) */
     }
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -298,19 +298,19 @@ zone_parse_ZONEMD(const char *data, size_t cursor, size_t max,
     
     /* typical: 2026020601 */
     cursor = zone_atom_int32(data, cursor, max, out);      /* serial */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 1 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* scheme */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 1 (SHA-384), 2 (SHA-512) */
     cursor = zone_atom_int8(data, cursor, max, out);       /* hash algorithm */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: hex digest (may be split with whitespace) */
     cursor = zone_atom_hexes_a(data, cursor, max, out, depth); /* digest (remainder-ish) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -326,15 +326,15 @@ zone_parse_URI(const char *data, size_t cursor, size_t max,
 
     /* typical: 10 */
     cursor = zone_atom_int16(data, cursor, max, out);      /* priority */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 1 */
     cursor = zone_atom_int16(data, cursor, max, out);      /* weight */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: "https://example.com/service" */
     cursor = zone_atom_txt(data, cursor, max, out); /* target (stringish; may need quotes/escapes) */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -350,19 +350,19 @@ zone_parse_SMIMEA(const char *data, size_t cursor, size_t max,
 
     /* typical: 3 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* usage */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 1 */
     cursor = zone_atom_int8(data, cursor, max, out);       /* selector */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: 1 (SHA-256), 2 (SHA-512) */
     cursor = zone_atom_int8(data, cursor, max, out);       /* matching type */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     /* typical: hex cert association data (may be split) */
     cursor = zone_atom_hexes_a(data, cursor, max, out, depth);
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;
@@ -378,7 +378,7 @@ zone_parse_DNAME(const char *data, size_t cursor, size_t max,
 
     /* typical: target.example.com. */
     cursor = zone_atom_name(data, cursor, max, out);       /* target */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
 
     
     return cursor;

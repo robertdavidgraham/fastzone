@@ -476,7 +476,7 @@ zone_atom_svcparams(const char *data, size_t cursor, size_t max,
 
     for (;;) {
         if (is_space_equiv(data[cursor]))
-            cursor = zone_parse_space(data, cursor, max, out, depth);
+            cursor = zone_slow_space(data, cursor, max, out, depth);
         if (cursor > max)
             return max + 1;
         if (cursor == max)
@@ -584,6 +584,6 @@ zone_atom_svcparams(const char *data, size_t cursor, size_t max,
     }
 
     /* keep moving forward after params */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
     return cursor;
 }

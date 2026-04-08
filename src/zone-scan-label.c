@@ -188,7 +188,7 @@ scan_avx512(const char *data, size_t i, size_t maxlen_ignored)
 #endif /* SIMD_AVX512 */
 
 /* --------------------------------- NEON ----------------------------------- */
-#ifdef SIMD_NEON
+#ifdef SIMD_NEON64
   #include <arm_neon.h>
 
 static inline int neon_any(uint8x16_t m)
@@ -233,7 +233,7 @@ scan_neon(const char *data, size_t i, size_t maxlen_ignored)
         i += 16;
     }
 }
-#endif /* SIMD_NEON */
+#endif /* SIMD_NEON64 */
 
 /* --------------------------------- SVE2 ----------------------------------- */
 #ifdef SIMD_SVE2
@@ -304,7 +304,7 @@ void zone_scan_label_init(simd_backend_t backend) {
     case SIMD_AUTO:
         zone_scan_label_init(simd_get_best());
         break;
-    case SIMD_SCALAR:
+    case SIMD_SCALAR1:
         scanner = scan_scalar;
         break;
     case SIMD_SWAR:
@@ -330,8 +330,8 @@ void zone_scan_label_init(simd_backend_t backend) {
         scanner = scan_avx512;
         break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON:
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64:
         scanner = scan_neon;
         break;
 #endif

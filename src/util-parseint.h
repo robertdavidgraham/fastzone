@@ -73,8 +73,6 @@ parse_integer(const char *data, size_t length, int *err) {
     uint64_t is_bad = (lo | hi) & 0x8080808080808080ULL;
     *err |= (is_bad != 0);
 
-    /* FIXME: is this step necessary?? Isn't 'lo' already that value? */
-    lo = lo & mask;
 
     /* Swap the bytes around on little-endian architectures, which
      * is most all of the time. Modern CPUs byte-swap with a single
@@ -86,6 +84,19 @@ parse_integer(const char *data, size_t length, int *err) {
     uint64_t pair = ((lo * 10ULL) + (lo >> 8)) & 0x00ff00ff00ff00ffULL;
     uint64_t quad = ((pair * 100ULL) + (pair >> 16)) & 0x0000ffff0000ffffULL;
     return ((quad * 10000ULL) + (quad >> 32)) & 0xffffffffULL;
+}
+
+static int inline parse_integer_selftest(void) {
+    char *testcase = "1234567";
+    int err = 0;
+    err |= (parse_integer(testcase, 1, &err) == 1);
+    err |= (parse_integer(testcase, 2, &err) == 12);
+    err |= (parse_integer(testcase, 3, &err) == 123);
+    err |= (parse_integer(testcase, 4, &err) == 1234);
+    err |= (parse_integer(testcase, 5, &err) == 12345);
+    err |= (parse_integer(testcase, 6, &err) == 123456);
+    err |= (parse_integer(testcase, 7, &err) == 1234567);
+    return err;
 }
 
 #endif

@@ -243,7 +243,7 @@ zone_atom_txt_list(const char *data, size_t cursor, size_t max,
             return max + 1;
 
         /* move past whitespace/comments/paren logic */
-        cursor = zone_parse_space(data, cursor, max, out, depth);
+        cursor = zone_slow_space(data, cursor, max, out, depth);
         if (cursor > max)
             return max + 1;
 
@@ -268,6 +268,6 @@ zone_atom_txt_list(const char *data, size_t cursor, size_t max,
     }
 
     /* per request: keep moving forward after the last string */
-    cursor = zone_parse_space(data, cursor, max, out, depth);
+    cursor = zone_slow_space(data, cursor, max, out, depth);
     return cursor;
 }

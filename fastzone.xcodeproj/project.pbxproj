@@ -60,6 +60,12 @@
 		1158B5E42F5FA3AF00308FF8 /* util-hex16.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E32F5FA3AF00308FF8 /* util-hex16.c */; };
 		1158B5E62F5FA5E300308FF8 /* zone-atom-hexb.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */; };
 		1158B5E92F69348300308FF8 /* zone-parse-header3.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5E82F69348300308FF8 /* zone-parse-header3.c */; };
+		1158B5EC2F74C04300308FF8 /* zone-fast-classify.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5EB2F74C04300308FF8 /* zone-fast-classify.c */; };
+		1158B5EF2F7729DE00308FF8 /* zone-fast-header.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5EE2F7729DE00308FF8 /* zone-fast-header.c */; };
+		1158B5F22F774B8E00308FF8 /* zone-slow-header.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5F12F774B8E00308FF8 /* zone-slow-header.c */; };
+		1158B5F42F77526000308FF8 /* zone-fast-header-test.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5F32F77526000308FF8 /* zone-fast-header-test.c */; };
+		1158B5F62F8098E100308FF8 /* zone-fast-record.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5F52F8098E100308FF8 /* zone-fast-record.c */; };
+		1158B5FB2F84397F00308FF8 /* zone-fbench.c in Sources */ = {isa = PBXBuildFile; fileRef = 1158B5FA2F84397F00308FF8 /* zone-fbench.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -146,6 +152,16 @@
 		1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-atom-hexb.c"; path = "src/zone-atom-hexb.c"; sourceTree = "<group>"; };
 		1158B5E72F62031200308FF8 /* util-parseint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "util-parseint.h"; path = "src/util-parseint.h"; sourceTree = "<group>"; };
 		1158B5E82F69348300308FF8 /* zone-parse-header3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-parse-header3.c"; path = "src/zone-parse-header3.c"; sourceTree = "<group>"; };
+		1158B5EA2F74C04300308FF8 /* zone-fast-classify.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-fast-classify.h"; path = "src/zone-fast-classify.h"; sourceTree = "<group>"; };
+		1158B5EB2F74C04300308FF8 /* zone-fast-classify.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-fast-classify.c"; path = "src/zone-fast-classify.c"; sourceTree = "<group>"; };
+		1158B5ED2F7729DE00308FF8 /* zone-fast-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-fast-header.h"; path = "src/zone-fast-header.h"; sourceTree = "<group>"; };
+		1158B5EE2F7729DE00308FF8 /* zone-fast-header.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-fast-header.c"; path = "src/zone-fast-header.c"; sourceTree = "<group>"; };
+		1158B5F02F774B8E00308FF8 /* zone-slow-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-slow-header.h"; path = "src/zone-slow-header.h"; sourceTree = "<group>"; };
+		1158B5F12F774B8E00308FF8 /* zone-slow-header.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-slow-header.c"; path = "src/zone-slow-header.c"; sourceTree = "<group>"; };
+		1158B5F32F77526000308FF8 /* zone-fast-header-test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-fast-header-test.c"; path = "src/zone-fast-header-test.c"; sourceTree = "<group>"; };
+		1158B5F52F8098E100308FF8 /* zone-fast-record.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-fast-record.c"; path = "src/zone-fast-record.c"; sourceTree = "<group>"; };
+		1158B5F92F84397F00308FF8 /* zone-fbench.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "zone-fbench.h"; path = "src/zone-fbench.h"; sourceTree = "<group>"; };
+		1158B5FA2F84397F00308FF8 /* zone-fbench.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "zone-fbench.c"; path = "src/zone-fbench.c"; sourceTree = "<group>"; };
 		11D53A3D2F505D4000361606 /* fastzone */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fastzone; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -163,6 +179,18 @@
 		11D53A342F505D4000361606 = {
 			isa = PBXGroup;
 			children = (
+				1158B5F92F84397F00308FF8 /* zone-fbench.h */,
+				1158B5FA2F84397F00308FF8 /* zone-fbench.c */,
+				1158B5982F51658300308FF8 /* zone-qbench.h */,
+				1158B5992F51658300308FF8 /* zone-qbench.c */,
+				1158B5F02F774B8E00308FF8 /* zone-slow-header.h */,
+				1158B5F12F774B8E00308FF8 /* zone-slow-header.c */,
+				1158B5ED2F7729DE00308FF8 /* zone-fast-header.h */,
+				1158B5EE2F7729DE00308FF8 /* zone-fast-header.c */,
+				1158B5F32F77526000308FF8 /* zone-fast-header-test.c */,
+				1158B5F52F8098E100308FF8 /* zone-fast-record.c */,
+				1158B5EA2F74C04300308FF8 /* zone-fast-classify.h */,
+				1158B5EB2F74C04300308FF8 /* zone-fast-classify.c */,
 				1158B5E82F69348300308FF8 /* zone-parse-header3.c */,
 				1158B5E72F62031200308FF8 /* util-parseint.h */,
 				1158B5E52F5FA5E300308FF8 /* zone-atom-hexb.c */,
@@ -218,8 +246,6 @@
 				1158B5952F51658300308FF8 /* zone-parse-types.h */,
 				1158B5962F51658300308FF8 /* zone-parse-types1.c */,
 				1158B5972F51658300308FF8 /* zone-parse-types2.c */,
-				1158B5982F51658300308FF8 /* zone-qbench.h */,
-				1158B5992F51658300308FF8 /* zone-qbench.c */,
 				1158B59C2F51658300308FF8 /* zone-scan.h */,
 				1158B59D2F51658300308FF8 /* zone-scan.c */,
 				1158B59E2F51658300308FF8 /* zone-scan-eol.c */,
@@ -317,6 +343,7 @@
 				1158B5B22F51658300308FF8 /* zone-atom-name4.c in Sources */,
 				1158B5B32F51658300308FF8 /* zone-parse-types1.c in Sources */,
 				1158B5B42F51658300308FF8 /* zone-parse-header.c in Sources */,
+				1158B5FB2F84397F00308FF8 /* zone-fbench.c in Sources */,
 				1158B5B52F51658300308FF8 /* zone-scan.c in Sources */,
 				1158B5B62F51658300308FF8 /* zone-parse-test.c in Sources */,
 				1158B5B72F51658300308FF8 /* zone-parse-mask.c in Sources */,
@@ -335,10 +362,12 @@
 				1158B5C62F51658300308FF8 /* zone-error.c in Sources */,
 				1158B5C72F51658300308FF8 /* zone-atom-bitmap.c in Sources */,
 				1158B5E62F5FA5E300308FF8 /* zone-atom-hexb.c in Sources */,
+				1158B5EF2F7729DE00308FF8 /* zone-fast-header.c in Sources */,
 				1158B5C82F51658300308FF8 /* zone-scan-quote.c in Sources */,
 				1158B5C92F51658300308FF8 /* zone-atom-n3hash.c in Sources */,
 				1158B5CA2F51658300308FF8 /* zone-atom-ttl.c in Sources */,
 				1158B5CB2F51658300308FF8 /* util-simd.c in Sources */,
+				1158B5F62F8098E100308FF8 /* zone-fast-record.c in Sources */,
 				1158B5CC2F51658300308FF8 /* zone-scan-fast.c in Sources */,
 				1158B5CD2F51658300308FF8 /* zone-file.c in Sources */,
 				1158B5CE2F51658300308FF8 /* zone-scan-nospace.c in Sources */,
@@ -347,6 +376,7 @@
 				1158B5D02F51658300308FF8 /* zone-scan-qtest.c in Sources */,
 				1158B5D12F51658300308FF8 /* zone-qbench.c in Sources */,
 				1158B5D22F51658300308FF8 /* zone-atom-txt.c in Sources */,
+				1158B5EC2F74C04300308FF8 /* zone-fast-classify.c in Sources */,
 				1158B5D32F51658300308FF8 /* zone-atom-type2.c in Sources */,
 				1158B5D42F51658300308FF8 /* zone-workq.c in Sources */,
 				1158B5D52F51658300308FF8 /* zone-scan-space.c in Sources */,
@@ -359,6 +389,8 @@
 				1158B5DC2F51658300308FF8 /* zone.c in Sources */,
 				1158B5DD2F51658300308FF8 /* zone-atom-base64a.c in Sources */,
 				1158B5DE2F51658300308FF8 /* zone-atom-caaval.c in Sources */,
+				1158B5F22F774B8E00308FF8 /* zone-slow-header.c in Sources */,
+				1158B5F42F77526000308FF8 /* zone-fast-header-test.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

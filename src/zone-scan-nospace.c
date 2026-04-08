@@ -37,7 +37,7 @@
 //   - Scalar and SWAR variants are always compiled (no #ifdef).
 //   - SIMD variants must be wrapped in conditional compilation blocks:
 //       #ifdef SIMD_SSE2, SIMD_SSE42, SIMD_AVX2, SIMD_AVX512,
-//       SIMD_NEON, SIMD_SVE2, SIMD_RISCVV.
+//       SIMD_NEON64, SIMD_SVE2, SIMD_RISCVV.
 //   - The SSE4.2 variant MUST use SSE4.2 text/string processing instructions
 //     (PCMPISTRI/PCMPISTRM; e.g., via _mm_cmpestri).
 //
@@ -249,7 +249,7 @@ scan_avx512(const char *data, size_t i, size_t maxlen_ignored)
 #endif /* SIMD_AVX512 */
 
 /* --------------------------------- NEON ----------------------------------- */
-#ifdef SIMD_NEON
+#ifdef SIMD_NEON64
   #include <arm_neon.h>
 
 static inline int neon_any(uint8x16_t m)
@@ -302,7 +302,7 @@ scan_neon(const char *data, size_t i, size_t maxlen_ignored)
         i += 16;
     }
 }
-#endif /* SIMD_NEON */
+#endif /* SIMD_NEON64 */
 
 /* --------------------------------- SVE2 ----------------------------------- */
 #ifdef SIMD_SVE2
@@ -376,7 +376,7 @@ size_t (*zone_scan_nospace)(const char *data, size_t offset, size_t len) = scan_
 void zone_scan_nospace_init(simd_backend_t backend) {
     switch (backend) {
     case SIMD_AUTO:zone_scan_nospace_init(simd_get_best());break;
-    case SIMD_SCALAR: scanner = scan_scalar; break;
+    case SIMD_SCALAR1: scanner = scan_scalar; break;
     case SIMD_SWAR: scanner = scan_swar; break;
 #if defined(SIMD_SSE2)
     case SIMD_SSE2: scanner = scan_sse2; break;
@@ -390,8 +390,8 @@ void zone_scan_nospace_init(simd_backend_t backend) {
 #if defined(SIMD_AVX512)
     case SIMD_AVX512: scanner = scan_avx512; break;
 #endif
-#if defined(SIMD_NEON)
-    case SIMD_NEON: scanner = scan_neon; break;
+#if defined(SIMD_NEON64)
+    case SIMD_NEON64: scanner = scan_neon; break;
 #endif
 #if defined(SIMD_SVE2)
     case SIMD_SVE2: scanner = scan_sve2; break;

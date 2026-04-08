@@ -73,13 +73,16 @@ typedef struct zone_state_t {
 struct wire_record_t;
 struct zone_state_t;
 
-size_t zone_parse_record(const char *data, size_t cursor, size_t max,
+size_t zone_slow_record(const char *data, size_t cursor, size_t max,
+                         struct zone_state_t *state,
+                         struct wire_record_t *out);
+size_t zone_fast_record(const char *data, size_t cursor, size_t max,
                          struct zone_state_t *state,
                          struct wire_record_t *out);
 
 
 size_t
-zone_parse_space(const char *data, size_t cursor, size_t max,
+zone_slow_space(const char *data, size_t cursor, size_t max,
                   struct wire_record_t *out,
                   unsigned *depth);
 #ifdef __cplusplus

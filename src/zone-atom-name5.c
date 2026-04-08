@@ -157,11 +157,16 @@ parse_escape(const char *data, size_t i, size_t max, uint8_t *out_byte)
 
 
 size_t
-zone_atom_name5(const char *data, size_t cursor, size_t max,
+zone_atom_name_slow(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out)
 {
     int err = 0;
 
+    if (data[cursor] == '@' && cursor+1 < max && !is_valid_name_char(data[cursor+1])) {
+        wire_append_bytes(out, out->state.origin, out->state.origin_length);
+        out->is_fqdn = 1;
+        return cursor + 1;
+    }
 
     /*
      * Special case, empty name with just one empty label, the ".",
@@ -170,6 +175,7 @@ zone_atom_name5(const char *data, size_t cursor, size_t max,
     if (data[cursor] == '.' && cursor+1 < max && !is_valid_name_char(data[cursor+1])) {
         /* empty name*/
         wire_append_uint8(out, 0);
+        out->is_fqdn = 1;
         return cursor + 1;
     }
     
@@ -301,7 +307,7 @@ int zone_atom_name5_quicktest(void) {
         /*
          * Run test
          */
-        size_t consumed = zone_atom_name5(in, 0, in_length, &out);
+        size_t consumed = zone_atom_name_slow(in, 0, in_length, &out);
         
         if (consumed == 0) {
             printf("[-] name5:%d: empty name, err=%d\n", i, (int)out.err.code);

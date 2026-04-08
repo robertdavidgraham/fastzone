@@ -117,7 +117,7 @@ parse_directive(const char *data, size_t cursor, size_t max,
         cursor++;
         while (data[cursor] == ' ' || data[cursor] == '\t')
             cursor++;
-        cursor = zone_parse_name0(data, cursor, max, &out2);
+        cursor = zone_parse_ownername(data, cursor, max, &out2);
         memcpy(state->origin, out2.wire.buf, out2.wire.len);
         state->origin_length = out2.wire.len;
         cursor = skip_remainder(data, cursor, max);
@@ -214,7 +214,7 @@ static const uint8_t byte_class_table[256] = {
 
  */
 size_t
-zone_parse_record(const char *data, size_t cursor, size_t max,
+zone_slow_record(const char *data, size_t cursor, size_t max,
                          zone_state_t *state, wire_record_t *out) {
     unsigned depth = 0;
     size_t rrlength_offset = 0;
@@ -234,9 +234,9 @@ again:
         /*
          * Skip any whitespace
          */
-        cursor = zone_parse_space(data, cursor, max, out, &depth);
+        cursor = zone_slow_space(data, cursor, max, out, &depth);
         copy_name(state->prior_name, state->prior_name_length, out);
-        out->name_length = state->prior_name_length;
+        out->ownername_length = state->prior_name_length;
         break;
     case BC_DOLLAR: /* '$' */
         cursor = parse_directive(data, cursor, max, state, out);
@@ -265,20 +265,23 @@ again:
         break;
     case BC_AT: /* '@' */
     case BC_STAR: /* '*' */
-        cursor = zone_parse_name0(data, cursor, max, out);
-        out->name_length = out->wire.len;
+        cursor = zone_parse_ownername(data, cursor, max, out);
+        out->ownername_length = out->wire.len;
         break;
     case BC_OTHER:
     default:
         /*
          * Step 1: owner name -> wire
          */
-        cursor = zone_atom_name4(data, cursor, max, out);
-        out->name_length = out->wire.len;
-        if (!out->is_fqdn) {
-            /* if not fully qualified it, append the origin */
-            wire_append_bytes(out, out->state.origin, out->state.origin_length);
-            out->name_length += out->state.origin_length;
+        {
+            size_t orig_wire_length = out->wire.len;
+            cursor = zone_atom_name_fast(data, cursor, max, out);
+            if (!out->is_fqdn) {
+                /* if not fully qualified it, append the origin */
+                wire_append_bytes(out, out->state.origin, out->state.origin_length);
+            }
+            out->ownername_length = out->wire.len - orig_wire_length;
+            
         }
         break;
     }

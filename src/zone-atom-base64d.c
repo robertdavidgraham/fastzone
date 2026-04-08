@@ -61,7 +61,7 @@ static char *(*cpustr)(unsigned cpuisa);
  * parens depth handling. This is called only briefly, before going back
  * onto the "happy-path".
  */
-static size_t
+/*static size_t
 find_space_equiv(const char *data, size_t max) {
     for (size_t i = 0; i < max; i++) {
         char c = data[i];
@@ -69,7 +69,7 @@ find_space_equiv(const char *data, size_t max) {
             return i;
     }
     return max;
-}
+}*/
 
 /* ---------------- Main wrapper ---------------- */
 
@@ -227,7 +227,12 @@ void zone_atom_base64d_init(int backend) {
             err |= 1;
         }
 
-        fprintf(stderr, "[+] loaded Turbo-BASE64\n");
+        {
+            static int is_printed = 0;
+            if (!is_printed)
+                fprintf(stderr, "[+] loaded Turbo-BASE64\n");
+            is_printed = 1;
+        }
     }
 #endif
 

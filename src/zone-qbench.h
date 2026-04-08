@@ -10,4 +10,6 @@ int quick_parse_name5_benchmark(int backend);
 
 extern const char *bench_data;
 
+void zone_quick_benchmarks(void);
+
 #endif

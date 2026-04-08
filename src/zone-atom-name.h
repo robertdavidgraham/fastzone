@@ -13,16 +13,19 @@ zone_atom_name(const char *data, size_t cursor, size_t max,
                  struct wire_record_t *out);
 void zone_atom_name_init(int backend);
 #else
-#define zone_atom_name zone_parse_name0
+#define zone_atom_name zone_parse_atomname
 #define zone_atom_name_init zone_atom_name4_init
 #endif
 
 size_t
-zone_parse_name0(const char *data, size_t cursor, size_t max,
+zone_parse_ownername(const char *data, size_t cursor, size_t max,
+                 struct wire_record_t *out);
+size_t
+zone_parse_atomname(const char *data, size_t cursor, size_t max,
                  struct wire_record_t *out);
 
 size_t
-zone_atom_name4(const char *data, size_t cursor, size_t max,
+zone_atom_name_fast(const char *data, size_t cursor, size_t max,
                 struct wire_record_t *out);
 
 
@@ -32,7 +35,7 @@ void zone_atom_name5_init(int backend);
 struct wire_record_t;
 struct zone_status_t;
 
-size_t zone_atom_name5(const char *data, size_t i, size_t max, struct wire_record_t *out);
+size_t zone_atom_name_slow(const char *data, size_t i, size_t max, struct wire_record_t *out);
 
 int zone_atom_name4_quicktest(void);
 int zone_atom_name5_quicktest(void);

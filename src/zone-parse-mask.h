@@ -18,8 +18,8 @@
  *
  * SIMD BACKENDS / RUNTIME DISPATCH
  *   - SIMD identifiers and enum values are declared in util-simd.h:
- *       SIMD_AUTO, SIMD_SCALAR, SIMD_SWAR, SIMD_SSE2, SIMD_SSE42, SIMD_AVX2,
- *       SIMD_AVX512, SIMD_NEON, SIMD_SVE2, SIMD_RISCVV, SIMD_MAX
+ *       SIMD_AUTO, SIMD_SCALAR1, SIMD_SWAR, SIMD_SSE2, SIMD_SSE42, SIMD_AVX2,
+ *       SIMD_AVX512, SIMD_NEON64, SIMD_SVE2, SIMD_RISCVV, SIMD_MAX
  *   - A backend is only present if the corresponding SIMD_* macro is defined.
  *     If the compiler/target does not support a backend, util-simd.h will not
  *     define the macro and the enum will not contain that value.
