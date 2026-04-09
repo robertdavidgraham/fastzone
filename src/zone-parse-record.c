@@ -19,6 +19,8 @@
 #ifdef _MSC_VER
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
+#elif __linux__
+#include <strings.h>
 #endif
 
 #ifndef ZONE_ERR_INTERNAL
@@ -36,9 +38,15 @@
 
 
 void copy_name(const unsigned char *name, size_t length, wire_record_t *out) {
+    (void)name;
+    (void)length;
+    (void)out;
     ;
 }
 size_t ERROR(zone_state_t *state, size_t max, int err_code, size_t err_cursor) {
+    (void)state;
+    (void)err_code;
+    (void)err_cursor;
     return max+1;
 }
 void wire_append_uint8(wire_record_t *out, unsigned val) {
@@ -228,7 +236,7 @@ again:
      * parse an owner-name. The other characters are other
      * options.
      */
-    switch (byte_class_table[data[cursor]]) {
+    switch (byte_class_table[(unsigned char)data[cursor]]) {
     case BC_SPACE: /* space and tab */
     case BC_LPAREN: /* '(' */
         /*

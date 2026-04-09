@@ -48,7 +48,9 @@
 #include "zone-parse-record.h"
 #include <string.h>
 
-
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
 
 /* ------------------------------ helpers ----------------------------------- */
 static inline int is_digit(char c) {
@@ -306,7 +308,7 @@ int zone_parse_header_quicktest(void) {
         const struct zone_type_test_expect *expect = &test_cases[i].expect;
         size_t cursor = 0;
         size_t next;
-        unsigned rrtype;
+        //unsigned rrtype;
         unsigned rrclass;
         unsigned rrttl;
         
@@ -322,7 +324,7 @@ int zone_parse_header_quicktest(void) {
          */
         next = zone_parse_header2(data, cursor, max, &out, &depth);
         consumed = next - cursor;
-        rrtype = out.wire.buf[0]<<8 | out.wire.buf[1];
+        //rrtype = out.wire.buf[0]<<8 | out.wire.buf[1];
         rrclass = out.wire.buf[2]<<8 | out.wire.buf[3];
         rrttl = out.wire.buf[4]<<24 | out.wire.buf[5]<<16 | out.wire.buf[6]<<8 | out.wire.buf[7];
         

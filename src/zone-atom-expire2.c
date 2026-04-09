@@ -242,12 +242,12 @@ static inline void sse2_extract_ymd_and_sod(const uint8_t *p,
 
   /* full numeric bounds (still cheap): */
   {
-    uint32_t hh = d2u(p[8])  * 10u + d2u(p[9]);
-    uint32_t mm = d2u(p[10]) * 10u + d2u(p[11]);
-    uint32_t ss = d2u(p[12]) * 10u + d2u(p[13]);
-    *err |= (unsigned)(hh >= 24u);
-    *err |= (unsigned)(mm >= 60u);
-    *err |= (unsigned)(ss >= 60u);
+    uint32_t hh2 = d2u(p[8])  * 10u + d2u(p[9]);
+    uint32_t mm2 = d2u(p[10]) * 10u + d2u(p[11]);
+    uint32_t ss2 = d2u(p[12]) * 10u + d2u(p[13]);
+    *err |= (unsigned)(hh2 >= 24u);
+    *err |= (unsigned)(mm2 >= 60u);
+    *err |= (unsigned)(ss2 >= 60u);
   }
 }
 

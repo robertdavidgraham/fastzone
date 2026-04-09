@@ -202,7 +202,7 @@ static inline __m128i mm_set1_u8(char x) { return _mm_set1_epi8((char)x); }
 
 /* unsigned range check for u8 using signed compares: (x >= lo && x <= hi) */
 static inline __m128i mm_inrange_u8(__m128i x, uint8_t lo, uint8_t hi) {
-    const __m128i bias = _mm_set1_epi8((char)0x80);
+    const __m128i bias = _mm_set1_epi8((unsigned char)0x80);
     __m128i xb = _mm_add_epi8(x, bias);
     __m128i lob = _mm_set1_epi8((char)(lo ^ 0x80));
     __m128i hib = _mm_set1_epi8((char)(hi ^ 0x80));

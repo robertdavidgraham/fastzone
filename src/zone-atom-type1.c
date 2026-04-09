@@ -100,7 +100,7 @@ zone_upper(unsigned char c)
 
 #define HASH fnv1a64_seeded
 static unsigned seed = 50272;
-static uint64_t
+uint64_t
 zone_hash64_upper_fnv1a(const char *s, size_t n)
 {
   uint64_t h = 1469598103934665603ULL; /* FNV offset basis (64-bit) */

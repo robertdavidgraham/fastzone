@@ -380,6 +380,7 @@ fail:
 
 static void
 print_error_message(const char *buf, size_t max, struct block_data x) {
+    (void)buf;
     fprintf(stderr, "%s:%u:%u: parse error #%d: %s\n",
             "test",
             (unsigned)x.error_line_number,

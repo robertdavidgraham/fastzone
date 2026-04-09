@@ -22,8 +22,8 @@
 
 /* -------------------------------- scalar ---------------------------------- */
 static inline size_t
-scan_scalar(const char *data, size_t i, size_t max)
-{
+scan_scalar(const char *data, size_t i, size_t max) {
+    (void)max;
     for (;;) {
         unsigned char c = (unsigned char)data[i];
         if (c == (unsigned char)'(' ||
@@ -49,8 +49,8 @@ has_eq_u8(uint64_t x, uint8_t c)
 }
 
 static inline size_t
-scan_swar(const char *data, size_t i, size_t max)
-{
+scan_swar(const char *data, size_t i, size_t max) {
+    (void)max;
     for (;;) {
         uint64_t w;
         memcpy(&w, data + i, 8);
@@ -77,8 +77,8 @@ scan_swar(const char *data, size_t i, size_t max)
   #include <emmintrin.h>
 
 static size_t
-scan_sse2(const char *data, size_t i, size_t max)
-{
+scan_sse2(const char *data, size_t i, size_t max) {
+    (void)max;
     const __m128i c_lp = _mm_set1_epi8('(');
     const __m128i c_rp = _mm_set1_epi8(')');
     const __m128i c_sc = _mm_set1_epi8(';');

@@ -29,9 +29,10 @@ typedef struct timeval {
     long tv_sec;
     long tv_usec;
 } timeval;
+struct timezone;
+static int gettimeofday(struct timeval* tp, struct timezone* tzp) {
+    (void)tzp;
 
-static int gettimeofday(struct timeval* tp, struct timezone* tzp)
-{
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
     // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
     // until 00:00:00 January 1, 1970 
@@ -140,7 +141,7 @@ int quick_scan_benchmark(int backend) {
     static const size_t copies = 100000;
     
     buf = malloc(test_length * copies);
-    for (int i=0; i<copies; i++) {
+    for (size_t i=0; i<copies; i++) {
         memcpy(buf + i*test_length, bench_data, test_length);
     }
     max = test_length * copies;
@@ -531,11 +532,11 @@ static uint64_t bench_classify(int backend) {
     }
     
     /* Create the token-tapes */
-    tokentape_t *whitespace = malloc(max/64 + 2);
-    tokentape_t *intoken = malloc(max/64 + 2);
+    tokentape_t *whitespace = malloc(max/8 + 2 * sizeof(uint64_t));
+    tokentape_t *intoken = malloc(max/8 + 2 * sizeof(uint64_t));
     
     /* pseudo-variable to prevent optimizations */
-    uint64_t total = 0;
+    uint64_t pseudo = 0;
     
     /* Count total bytes for reporting results */
     uint64_t total_bytes = 0;
@@ -551,7 +552,7 @@ static uint64_t bench_classify(int backend) {
      * BENCHMARK - call the benchmarked function */
     for (unsigned n=0; n<10000; n++) {
         zone_fast_classify(buf, max, whitespace, intoken);
-        total += whitespace[max/64] + intoken[max/64];
+        pseudo += whitespace[max/64] + intoken[max/64];
         total_bytes += max;
     }
     
@@ -575,7 +576,7 @@ static uint64_t bench_classify(int backend) {
     free(whitespace);
     free(intoken);
     
-    return total;
+    return pseudo + total_bytes;
 }
 
 static uint64_t
@@ -583,6 +584,9 @@ tokenize_buffer(const char *data, size_t max, tokentape_t *whitespace, tokentape
     size_t cursor = 0;
     uint64_t count_tokens = 0;
     
+    /* We don't actually look at the data */
+    (void)data;
+
     while (cursor < max) {
         size_t len;
         len = classified_length(intoken, cursor);
@@ -616,9 +620,6 @@ static uint64_t bench_tokenize(int backend) {
     /* Create the token-tapes */
     tokentape_t *whitespace = malloc(max/sizeof(uint64_t) + 2);
     tokentape_t *intoken = malloc(max/sizeof(uint64_t) + 2);
-    
-    /* pseudo-variable to prevent optimizations */
-    uint64_t total = 0;
     
     /* Count total bytes for reporting results */
     uint64_t total_bytes = 0;
@@ -666,7 +667,7 @@ static uint64_t bench_tokenize(int backend) {
     return total_bytes;
 }
 
-static uint64_t bench_lexifize(int backend) {
+uint64_t bench_lexify(int backend) {
     
     /* Select the SIMD backend, like SSE2, AVX2, NEON, SVE2, etc. */
     zone_fast_classify_init(backend);
@@ -684,9 +685,6 @@ static uint64_t bench_lexifize(int backend) {
     /* Create the token-tapes */
     tokentape_t *whitespace = malloc(max/sizeof(uint64_t) + 2);
     tokentape_t *intoken = malloc(max/sizeof(uint64_t) + 2);
-    
-    /* pseudo-variable to prevent optimizations */
-    uint64_t total = 0;
     
     /* Count total bytes for reporting results */
     uint64_t total_bytes = 0;
@@ -906,7 +904,7 @@ void zone_quick_benchmarks(void) {
     uint64_t pseudo = 0;
 
     printf("--- lex ---\n");
-    pseudo += bench_tokenize(SIMD_NEON64);
+    pseudo += bench_tokenize(SIMD_SWAR);
 
     printf("--- tokenize ---\n");
     pseudo += bench_tokenize(SIMD_SCALAR2);
@@ -937,5 +935,5 @@ void zone_quick_benchmarks(void) {
 
     
 
-    printf("--- pseudo=%llu\n", pseudo);
+    printf("--- pseudo=%llu\n", (long long unsigned)pseudo);
 }

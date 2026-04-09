@@ -86,7 +86,7 @@ parse_integer(const char *data, size_t length, int *err) {
     return ((quad * 10000ULL) + (quad >> 32)) & 0xffffffffULL;
 }
 
-static int inline parse_integer_selftest(void) {
+static inline int parse_integer_selftest(void) {
     char *testcase = "1234567";
     int err = 0;
     err |= (parse_integer(testcase, 1, &err) == 1);

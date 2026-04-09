@@ -227,7 +227,7 @@ classify_swar(const char *data, size_t max,
         const unsigned char *p = (const unsigned char *)data + (w << 6);
         uint64_t ws_stop = 0;
         uint64_t eol_stop = 0;
-        unsigned k;
+        uint64_t k;
 
         for (k = 0; k < 8; k++) {
             uint64_t x = load64_aligned(p + (k << 3));
@@ -830,7 +830,27 @@ quicktest_one_backend(int backend)
 int
 zone_fast_classify_quicktest(void)
 {
-    int err = 0;
+    uint64_t test[4] = {
+#ifdef __arm__
+        0x00f0000000000000ull,
+#else
+        0x0000000000000F00ull,
+#endif
+        0,0,0
+    };
+
+    int err = (classified_length(test, 0) != 8);
+    if (err) {
+        fprintf(stderr, "[-] classified_length() = %u\n", classified_length(test, 0));
+        return 1;
+    }
+    err = (classified_length(test, 64) != 64);
+    if (err) {
+        fprintf(stderr, "[-] classified_length() = %u\n", classified_length(test, 64));
+        return 1;
+    }
+
+    err = 0;
     
     for (unsigned backend = 0; backend < SIMD_MAX; backend++) {
         int x = quicktest_one_backend(backend);

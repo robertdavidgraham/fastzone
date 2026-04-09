@@ -128,8 +128,8 @@ static inline int is_valid_label_char(unsigned char c)
     return 0;
 }
 
-static uint32_t classify_scalar(const char *p, size_t max)
-{
+static uint32_t classify_scalar(const char *p, size_t max) {
+    (void)max;
     uint32_t inv = 0;
     for (unsigned k = 0; k < 32; k++) {
         inv |= (uint32_t)(!is_valid_label_char((unsigned char)p[k])) << k;
@@ -149,7 +149,7 @@ zone_name4_classify32_fn name_classify = classify_scalar;
 
 #if defined(SIMD_SSE2) || defined(SIMD_SSE42)
 #include <emmintrin.h>
-static inline __m128i xor80_128(__m128i v) { return _mm_xor_si128(v, _mm_set1_epi8((char)0x80)); }
+static inline __m128i xor80_128(__m128i v) { return _mm_xor_si128(v, _mm_set1_epi8((unsigned char)0x80)); }
 static inline __m128i in_range_u8_sse2(__m128i x, unsigned char lo, unsigned char hi)
 {
     __m128i xx = xor80_128(x);
@@ -159,6 +159,7 @@ static inline __m128i in_range_u8_sse2(__m128i x, unsigned char lo, unsigned cha
 }
 static uint32_t classify_sse2(const char *p, size_t max)
 {
+    (void)max;
     __m128i v0 = _mm_loadu_si128((const __m128i *)(const void *)(p + 0));
     __m128i v1 = _mm_loadu_si128((const __m128i *)(const void *)(p + 16));
 
@@ -440,7 +441,7 @@ zone_atom_name_fast(const char *data, size_t cursor, size_t max,
         length = ctz64(mask);
         
         /* set this label's length */
-        output[offset] = length;
+        output[offset] = (unsigned char)length;
         
         /* move to next label */
         offset += length + 1;
@@ -463,8 +464,13 @@ end:
     return next;
 }
 
+#if defined(__GNUC__) || defined(__clang__)
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
+#else
+#define likely(x)   (x)
+#define unlikely(x) (x)
+#endif
 
 static inline size_t
 zone_atom_name4b(const char *data, size_t cursor, size_t max,
@@ -511,24 +517,24 @@ zone_atom_name4b(const char *data, size_t cursor, size_t max,
     length = ctz64(mask);
     adjust = (length == 0);
     mask >>= length + 1 - adjust;
-    output[offset] = length;
+    output[offset] = (unsigned char)length;
     offset += length + 1 - adjust;
     
     length = ctz64(mask);
     adjust = (length == 0);
     mask >>= length + 1 - adjust;
-    output[offset] = length;
+    output[offset] = (unsigned char)length;
     offset += length + 1 - adjust;
 
     length = ctz64(mask);
     adjust = (length == 0);
     mask >>= length + 1 - adjust;
-    output[offset] = length;
+    output[offset] = (unsigned char)length;
     offset += length + 1 - adjust;
 
     length = ctz64(mask);
     mask >>= length + 1;
-    output[offset] = length;
+    output[offset] = (unsigned char)length;
     offset += length + 1;
     
     if (likely(length == 0)) {
@@ -550,7 +556,7 @@ zone_atom_name4b(const char *data, size_t cursor, size_t max,
         mask >>= length + 1;
         
         /* set this label's length */
-        output[offset] = length;
+        output[offset] = (unsigned char)length;
         
         /* move to next label */
         offset += length + 1;
@@ -577,7 +583,8 @@ size_t
 zone_parse_ownername(const char *data, size_t cursor, size_t max,
                 wire_record_t *out) {
     size_t next;
-    
+    size_t orig_wire_length = out->wire.len;
+
     /*
      * 1. A name consisting of just an `@` symbol refers to
      * an empty prefix to which the $ORIGIN suffix will be
@@ -592,7 +599,6 @@ zone_parse_ownername(const char *data, size_t cursor, size_t max,
     /*
      * 2. Grab the name from the input.
      */
-    size_t orig_wire_length = out->wire.len;
     if (data[cursor] == '*') {
         next = zone_atom_name_slow(data, cursor, max, out);
     } else {

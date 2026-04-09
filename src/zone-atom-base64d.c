@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
+size_t x;
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -29,6 +29,7 @@ __declspec(dllimport) int __stdcall FreeLibrary(HMODULE);
 #else
 #include <dlfcn.h>
 #endif
+
 
 
 /*
@@ -170,13 +171,13 @@ int zone_atom_base64d_quicktest(void) {
         
         if (memcmp(out.wire.buf, expected, out.wire.len) != 0) {
             fprintf(stderr, "[-] atom.base64d: #%d (tb64dec): output mismatch\n", i);
-            int i;
-            for (i=0; i<out.wire.len; i++) {
-                printf("%02x ", out.wire.buf[i]);
+            size_t j;
+            for (j=0; j<out.wire.len; j++) {
+                printf("%02x ", out.wire.buf[j]);
             }
             printf("\n");
-            for (i=0; i<cursor; i++) {
-                printf("%02x ", expected[i]);
+            for (j=0; j<cursor; j++) {
+                printf("%02x ", expected[j]);
             }
             printf("\n");
             

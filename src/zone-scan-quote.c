@@ -323,7 +323,7 @@ size_t zone_scan_quote(const char *data, size_t offset, size_t max) {
             return offset;
         }
     }
-    return max + 1; /* error */
+    //return max + 1; /* error */
 }
 
 

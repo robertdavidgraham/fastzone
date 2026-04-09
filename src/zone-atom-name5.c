@@ -263,6 +263,7 @@ static void dump_wire(const unsigned char *wire, size_t wire_len) {
 }
 
 void zone_atom_name5_init(int backend) {
+    (void)backend;
     /* nothing to do */
     return;
 }

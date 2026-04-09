@@ -99,7 +99,11 @@ classified_length(const tokentape_t *tape, size_t cursor)
     unsigned remain = 64u - shift;
     
     /* calculate zeroes for this word, starting at the word-index and bit-index */
+#ifdef __arm__
     unsigned len0 = count_zeroes(tape[index] << shift);
+#else
+    unsigned len0 = count_zeroes(tape[index] >> shift);
+#endif
     
     /* calculate zeroes for the start of the next word */
     unsigned len1 = count_zeroes(tape[index + 1]);
@@ -107,18 +111,18 @@ classified_length(const tokentape_t *tape, size_t cursor)
     /* if we consume all the remaining bits, then return this word's
      * count plus the start of the next word's count, otherwise,
      * return just this count. */
-    unsigned mask = -(unsigned)(len0 >= remain);
+    unsigned mask = (unsigned)(-(int)(len0 >= remain));
     return (len0 & ~mask) | ((remain + len1) & mask);
     
     
-    return (len0 >= remain) ? (remain + len1) : len0;
+    //return (len0 >= remain) ? (remain + len1) : len0;
 
-    unsigned c = 1 ^ ((len0 - remain) >> (sizeof(unsigned) * 8 - 1));
-    return len0 + ((remain + len1 - len0) & -c);
+    //unsigned c = 1 ^ ((len0 - remain) >> (sizeof(unsigned) * 8 - 1));
+    //return len0 + ((remain + len1 - len0) & -c);
     
     
-    unsigned crossed = (len0 >= remain);
-    return (unsigned)(len0 - crossed * (len0 - remain) + crossed * len1);
+    //unsigned crossed = (len0 >= remain);
+    //return (unsigned)(len0 - crossed * (len0 - remain) + crossed * len1);
 }
 
 #ifdef __cplusplus

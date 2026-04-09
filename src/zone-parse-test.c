@@ -4,6 +4,10 @@
 #include <string.h>
 #include <assert.h>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
 /* --------------------------- quicktest --------------------------- */
 
 /*
@@ -622,7 +626,7 @@ zone_parse_quicktest1(const struct tc *testcases, PFN_PARSE_RECORD parse_record)
 
     int failures = 0;
     struct zone_state_t state = {0};
-    memcpy(state.origin, "\x7example\x3com\x0", 13);
+    memcpy(state.origin, "\x7e" "xample" "\x3" "com" "\x0", 12);
     state.origin_length = 13;
 
     for (int i = 0; testcases[i].contents; i++) {
@@ -673,11 +677,11 @@ zone_parse_quicktest1(const struct tc *testcases, PFN_PARSE_RECORD parse_record)
             fprintf(stderr, "[-] record: %d: bad data\n",
                     i);
             fprintf(stderr, "    %s\n", test->contents);
-            for (int j=0; j<out_len; j++) {
+            for (size_t j=0; j<out_len; j++) {
                 fprintf(stderr, " %02x ", out_wire[j]);
             }
             fprintf(stderr, "\n");
-            for (int j=0; j<test->expected_len; j++) {
+            for (size_t j=0; j<test->expected_len; j++) {
                 fprintf(stderr, " %02x ", test->expected[j]);
             }
             fprintf(stderr, "\n");

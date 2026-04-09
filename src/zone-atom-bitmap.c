@@ -254,7 +254,7 @@ zone_atom_typelist_a(const char *data, size_t cursor, size_t max,
         /* measure token */
         size_t start = cursor;
         while (cursor < max) {
-            char c = data[cursor];
+            c = data[cursor];
             if (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == ';' || c == '(' || c == ')')
                 break;
             cursor++;
@@ -336,7 +336,7 @@ static int is_word(const char c) {
 }
 static inline size_t get_length(const char *data, size_t cursor) {
     size_t i = 0;
-    while (is_word(data[i]))
+    while (is_word(data[cursor + i]))
         i++;
     return i;
 }
@@ -382,7 +382,7 @@ zone_atom_nseclist_b(const char *data, size_t cursor, size_t max,
             unsigned char *octets = out->wire.buf + out->wire.len;
             memmove(octets, &bitmap[window], 2 + blocks);
             octets[0] = (uint8_t)window;
-            octets[1] = blocks;
+            octets[1] = (uint8_t)blocks;
             out->wire.len += 2 + blocks;
         }
     }

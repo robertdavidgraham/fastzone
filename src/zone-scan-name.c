@@ -366,7 +366,7 @@ size_t zone_scan_name(const char *data, size_t offset, size_t len) {
         assert(!"not possible");
         return len + 1;
     }
-    return len + 1; /* error */
+    //return len + 1; /* error */
 }
 
 

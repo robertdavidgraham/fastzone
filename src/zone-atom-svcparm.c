@@ -234,7 +234,7 @@ static size_t parse_stringish(const char *data, size_t cursor, size_t max,
             }
 
             if (c == '\\') {
-                uint8_t v;
+                uint8_t v = 0;
                 cursor = parse_escape(data, cursor, max, &v);
                 if (len < dst_max)
                     dst[len++] = v;
@@ -257,7 +257,7 @@ static size_t parse_stringish(const char *data, size_t cursor, size_t max,
             if (is_space_equiv(c)) break;
 
             if (c == '\\') {
-                uint8_t v;
+                uint8_t v = 0;
                 cursor = parse_escape(data, cursor, max, &v);
                 if (len < dst_max)
                     dst[len++] = v;

@@ -17,6 +17,10 @@
 #include <stdbool.h>
 #include <assert.h>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
 #ifdef _MSC_VER
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
@@ -125,14 +129,14 @@ zone_fast_record(const char *data, size_t cursor, size_t max,
 
     out->line_count = 0;
 
-again:
+
     
     /*
      * 99% this hits the default/OTHER case, where we just
      * parse an owner-name. The other characters are other
      * options.
      */
-    switch (byte_class_table[data[cursor]]) {
+    switch (byte_class_table[(unsigned char)data[cursor]]) {
     case BC_SPACE: /* space and tab */
     case BC_LPAREN: /* '(' */
     case BC_DOLLAR: /* '$' */

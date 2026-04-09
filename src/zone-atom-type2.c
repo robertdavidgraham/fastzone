@@ -223,7 +223,7 @@ name_table_insert(const char *name, unsigned length, unsigned index) {
     
     if (e->index == 0) {
         e->hash  = hash;
-        e->index = index;
+        e->index = (uint16_t)index;
         return 0; /* success */
     } else
         return 1; /* failure, collision */
@@ -320,7 +320,7 @@ zone_types2_init(void)
         }
         if (idx >= TABLESIZE)
             break;
-        value_table[i].index = idx;
+        value_table[i].index = (uint16_t)idx;
     }
     
     {
@@ -364,8 +364,8 @@ unsigned zone_type2_lookup_val(unsigned value) {
 #if BYTE_ORDER == LITTLE_ENDIAN
 static const uint64_t TYPE_NAME  = 0x0000000045505954llu;
 static const uint64_t TYPE_MASK  = 0x00000000ffffffffllu;
-static const uint64_t CLASS_NAME = 0x0000005353414c43llu;
-static const uint64_t CLASS_MASK = 0x000000ffffffffffllu;
+//static const uint64_t CLASS_NAME = 0x0000005353414c43llu;
+//static const uint64_t CLASS_MASK = 0x000000ffffffffffllu;
 #else
 static const uint64_t TYPE_NAME  = 0x5459504500000000llu;
 static const uint64_t TYPE_MASK  = 0xffffffff00000000llu;
@@ -390,21 +390,14 @@ zone_type2_lookup( const char * restrict name, size_t length, unsigned * restric
             return idx;
         }
     } else {
-        /*
-         * Not found, maybe we have a TYPEddd instead.
-         */
-        uint64_t input;
-        memcpy(&input, name, 8);
-        if ((input & TYPE_MASK) == TYPE_NAME) {
-            uint16_t value = 0;
-            if (parse_u16(name + 4, length - 4, &value)) {
-                *type_value = value;
-                unsigned idx = zone_type2_lookup_val(value);
-                if (idx)
-                    return idx;
-                else
-                    return 5; /* unknown/not-found */
-            }
+        uint16_t value = 0;
+        if (parse_u16(name + 4, length - 4, &value)) {
+            *type_value = value;
+            unsigned idx = zone_type2_lookup_val(value);
+            if (idx)
+                return idx;
+            else
+                return 5; /* unknown/not-found */
         }
     }
     

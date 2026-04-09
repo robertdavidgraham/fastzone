@@ -124,7 +124,7 @@ static size_t scan_sse2_impl(const char *p)
 }
 
 static size_t scan_sse2(const char *p)  { return scan_sse2_impl(p); }
-static size_t scan_sse42(const char *p) { return scan_sse2_impl(p); }
+//static size_t scan_sse42(const char *p) { return scan_sse2_impl(p); }
 
 #endif /* SIMD_SSE2 || SIMD_SSE42 */
 
@@ -532,13 +532,13 @@ int zone_atom_base64c_quicktest(void) {
         
         if (memcmp(out.wire.buf, expected, out.wire.len) != 0) {
             fprintf(stderr, "[-] atom.base64c: #%d (tb64dec): output mismatch\n", i);
-            int i;
-            for (i=0; i<out.wire.len; i++) {
-                printf("%02x ", out.wire.buf[i]);
+            size_t j;
+            for (j=0; j<out.wire.len; j++) {
+                printf("%02x ", out.wire.buf[j]);
             }
             printf("\n");
-            for (i=0; i<cursor; i++) {
-                printf("%02x ", expected[i]);
+            for (j=0; j<cursor; j++) {
+                printf("%02x ", expected[j]);
             }
             printf("\n");
             

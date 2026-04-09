@@ -2,6 +2,9 @@
 #include <assert.h>
 
 size_t zone_parse_finish(const char *data, size_t cursor, size_t max, struct wire_record_t *out, unsigned *depth) {
+   
+    if (*depth != 0)
+        return PARSE_ERR(1, cursor, max, out);
     if (data[cursor] == '\n') {
         out->line_count++;
     } else {

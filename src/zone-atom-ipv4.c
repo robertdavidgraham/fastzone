@@ -178,7 +178,7 @@ static int parse_octet(const char *data,
 size_t zone_atom_ipv4(const char *data, size_t cursor, size_t max, struct wire_record_t *out) {
     size_t p = cursor;
     uint8_t octets[4];
-    size_t wire_len_before;
+    //size_t wire_len_before;
     int err = 0;
     size_t err_cursor = cursor;
 
@@ -190,7 +190,7 @@ size_t zone_atom_ipv4(const char *data, size_t cursor, size_t max, struct wire_r
         return cursor;
     }
 
-    wire_len_before = out->wire.len;
+    //wire_len_before = out->wire.len;
 
     if (out->wire.buf == NULL || out->wire.len > out->wire.max || (out->wire.max - out->wire.len) < 4) {
         return PARSE_ERR(1, cursor, max, out);

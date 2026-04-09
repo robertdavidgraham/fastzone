@@ -128,6 +128,8 @@ static  size_t
 
 size_t
 new_parse_ttl2x(const char *data, size_t cursor, size_t max, size_t len, unsigned *ttl, int *err) {
+    (void)max;
+
     if (len > 8) {
         *err |= 1;
         return cursor;
@@ -158,9 +160,10 @@ typedef struct timeval {
     long tv_sec;
     long tv_usec;
 } timeval;
+struct timezone;
 
-int gettimeofday(struct timeval* tp, struct timezone* tzp)
-{
+int gettimeofday(struct timeval* tp, struct timezone* tzp) {
+    (void)tzp;
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
     // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
     // until 00:00:00 January 1, 1970 
@@ -201,7 +204,7 @@ void zone_atom_ttl_bench(void) {
     
     if (err)
         printf("***ERROR****\n");
-    printf("total %llu\n", total_ttl);
+    printf("total %llu\n", (long long unsigned)total_ttl);
     long long total_bytes = i * 5;
     long long total_records = i;
     double elapsed = (end.tv_sec - start.tv_sec) +

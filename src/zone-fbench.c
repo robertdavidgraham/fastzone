@@ -1,3 +1,4 @@
+#include "zone.h"
 #include "zone-fbench.h"
 #include "zone-parse.h"
 #include "zone-parse-record.h"
@@ -33,9 +34,9 @@ typedef struct timeval {
     long tv_sec;
     long tv_usec;
 } timeval;
-
-static int gettimeofday(struct timeval* tp, struct timezone* tzp)
-{
+struct timezone;
+static int gettimeofday(struct timeval* tp, struct timezone* tzp) {
+    (void)tzp;
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
     // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
     // until 00:00:00 January 1, 1970
@@ -102,6 +103,9 @@ unsigned rrtypes[65536] = {0};
 uint64_t rrbytes[65536] = {0};
 
 unsigned zone_file_bench(const char *filename, int backend) {
+
+    zone_init(backend);
+
     /*
      * Open the file
      */
@@ -166,13 +170,13 @@ unsigned zone_file_bench(const char *filename, int backend) {
         
         size_t cursor;
         for (cursor = 0; cursor<filesize; ) {
-            size_t start = cursor;
+            size_t begin = cursor;
             out.wire.len = 0;
             size_t next = zone_slow_record(data, cursor, filesize, &state, &out);
             if (out.err.code) {
                 fprintf(stderr, "filename:%u: error #%d (%s)\n", (unsigned)state.line_number, out.err.code,
                         zone_error_msg(out.err.code));
-                print_error_line(data, start, out.err.cursor);
+                print_error_line(data, begin, out.err.cursor);
                 exit(1);
             }
             if (out.wire.len) {

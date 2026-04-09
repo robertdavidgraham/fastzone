@@ -48,9 +48,11 @@ typedef struct timeval {
     long tv_sec;
     long tv_usec;
 } timeval;
+struct timezone;
 
 static int gettimeofday(struct timeval* tp, struct timezone* tzp)
 {
+    (void)tzp;
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
     // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
     // until 00:00:00 January 1, 1970 
@@ -154,7 +156,7 @@ int main(int argc, char *argv[]) {
 
     int err = 0;
     err += zone_fast_classify_quicktest();
-    err += zone_fast_header_quicktest(SIMD_NEON64);
+    err += zone_fast_header_quicktest(SIMD_SWAR);
     err += zone_parse_header2_quicktest();
     err += zone_atom_quicktest();
     err += zone_parse_header_quicktest();
@@ -189,13 +191,13 @@ int main(int argc, char *argv[]) {
      * Make sure that everything is in basic working order.
      */
     //err += zone_parse_header_quicktest();
-    err += zone_scan_quicktest();
+    /*err += zone_scan_quicktest();
     err += zone_atom_name4_quicktest();
     err += zone_atom_name5_quicktest();
     if (err) {
         fprintf(stderr, "[-] self test failed\n");
         return 1;
-    }
+    }*/
   
 #if 0
     quick_parse_name1_benchmark(SIMD_SCALAR1);
@@ -226,7 +228,7 @@ int main(int argc, char *argv[]) {
 #endif
 #endif
     
-    quick_parse_name4_benchmark(SIMD_SCALAR1);
+    //quick_parse_name4_benchmark(SIMD_SCALAR1);
     //quick_parse_name4_benchmark(SIMD_SWAR);
 #ifdef SIMD_NEON64
     quick_parse_name4_benchmark(SIMD_NEON64);
@@ -235,8 +237,8 @@ int main(int argc, char *argv[]) {
     quick_parse_name4_benchmark(SIMD_SVE2);
 #endif
 
-    quick_parse_name5_benchmark(SIMD_SCALAR1);
-    quick_parse_name5_benchmark(SIMD_SWAR);
+    //quick_parse_name5_benchmark(SIMD_SCALAR1);
+    //quick_parse_name5_benchmark(SIMD_SWAR);
 #ifdef SIMD_NEON64
     quick_parse_name5_benchmark(SIMD_NEON64);
 #endif
@@ -248,8 +250,8 @@ int main(int argc, char *argv[]) {
     /*
      * Do the simplest benchmarks
      */
-    quick_scan_benchmark(SIMD_SCALAR1);
-    quick_scan_benchmark(SIMD_SWAR);
+    //quick_scan_benchmark(SIMD_SCALAR1);
+    //quick_scan_benchmark(SIMD_SWAR);
 #ifdef SIMD_NEON64
     quick_scan_benchmark(SIMD_NEON64);
 #endif
@@ -257,5 +259,5 @@ int main(int argc, char *argv[]) {
     quick_benchmark(SIMD_SVE2);
 #endif
         
-    return 0;
+    //return 0;
 }

@@ -53,6 +53,7 @@ static const uint8_t zone_special_table[256] = {
 
 static size_t
 find_special(const char *data, size_t cursor, size_t max) {
+    (void)max;
     const unsigned char *p = (const unsigned char *)data + cursor;
     size_t i = 0;
 
@@ -233,13 +234,13 @@ int zone_atom_base64b_quicktest(void) {
         
         if (memcmp(out.wire.buf, expected, out.wire.len) != 0) {
             fprintf(stderr, "[-] atom.base64b: #%d (tb64dec): output mismatch\n", i);
-            int i;
-            for (i=0; i<out.wire.len; i++) {
-                printf("%02x ", out.wire.buf[i]);
+            size_t j;
+            for (j=0; j<out.wire.len; j++) {
+                printf("%02x ", out.wire.buf[j]);
             }
             printf("\n");
-            for (i=0; i<cursor; i++) {
-                printf("%02x ", expected[i]);
+            for (j=0; j<cursor; j++) {
+                printf("%02x ", expected[j]);
             }
             printf("\n");
             

@@ -61,9 +61,9 @@ static inline void parse_tokens_reset(parsetokens_t *t)
  */
 size_t parse_token_length2(const char *data, size_t cursor, parsetokens_t *tokens);
 
-static __attribute__((always_inline))
+static inline
 size_t parse_token_length(const char *data, size_t cursor, parsetokens_t *tokens) {
-    size_t length = ctz64(tokens->mask_ws);
+    unsigned length = ctz64(tokens->mask_ws);
     if (length == 0 || length >= tokens->avail)
         return parse_token_length2(data, cursor, tokens);
     else {
@@ -80,9 +80,9 @@ size_t parse_space_length2(const char *data, size_t cursor, parsetokens_t *token
 /* Returns length of run of only: ' ', '\t'
  * Consumes that run from the rolling state.
  */
-static __attribute__((always_inline))
+static inline
 size_t parse_space_length(const char *data, size_t cursor, parsetokens_t *tokens) {
-    size_t length = ctz64(~tokens->mask_st);
+    unsigned length = ctz64(~tokens->mask_st);
     if (length >= tokens->avail)
         return parse_space_length2(data, cursor, tokens);
     else {

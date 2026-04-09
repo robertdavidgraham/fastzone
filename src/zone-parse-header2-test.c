@@ -19,6 +19,7 @@ run_one_case(const char *label,
              size_t expect_cursor,
              unsigned index)
 {
+    (void)index;
     static const uint8_t expect8[8] = {
         0x00,0x02, /* NS */
         0x00,0x01, /* IN */
@@ -126,13 +127,14 @@ int do_test(unsigned sp1, unsigned sp2, unsigned sp3, unsigned sp4, unsigned inc
     free(line);
     return err;
 }
+
 int
 zone_parse_header2_quicktest(void)
 {
     int err = 0;
     return 0;
-    for (unsigned i=0; i<66*66*66*66*4; i++) {
-        unsigned foo = i;
+    for (size_t i=0; i<66*66*66*66*4; i++) {
+        unsigned foo = (unsigned)i;
         unsigned sp1 = foo & 66;
         foo /= 66;
         unsigned sp2 = foo & 66;
@@ -143,7 +145,7 @@ zone_parse_header2_quicktest(void)
         foo /= 66;
 
         assert(foo < 4);
-        err += do_test(sp1, sp2, sp3, sp4, foo, i);
+        err += do_test(sp1, sp2, sp3, sp4, foo, (unsigned)i);
 
     }
 

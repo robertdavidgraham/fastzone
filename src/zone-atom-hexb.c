@@ -128,7 +128,7 @@ zone_atom_hexes_b(const char *data, size_t cursor, size_t max,
             return cursor;
         }
     }
-    return cursor;
+    //return cursor;
 }
 
 

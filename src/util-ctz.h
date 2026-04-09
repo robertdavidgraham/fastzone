@@ -59,6 +59,9 @@
 
 static inline unsigned ctz32(unsigned x)
 {
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)
+    if (x == 0) return 32;
+#endif
     unsigned long idx;
     _BitScanForward(&idx, (unsigned long)x);
     return (unsigned)idx;
@@ -66,6 +69,9 @@ static inline unsigned ctz32(unsigned x)
 
 static inline unsigned ctz64(uint64_t x)
 {
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)
+    if (x == 0) return 64;
+#endif
     unsigned long idx;
   #if defined(_M_X64) || defined(_M_ARM64)
     _BitScanForward64(&idx, (unsigned __int64)x);

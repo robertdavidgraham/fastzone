@@ -144,6 +144,7 @@ size_t zone_mask_skip_nospace2(const char *data, size_t cursor,  size_t max,
 static inline size_t
 zone_mask_skip_nospace1(const char *data, size_t cursor, size_t max,
                         size_t length) {
+    (void)data;
     if (cursor < max)
         return cursor + length;
     else

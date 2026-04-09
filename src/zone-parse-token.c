@@ -344,7 +344,7 @@ static void scan_sse2_impl(const char *p, parsetokens_t *t)
 }
 
 static void scan_sse2 (const char *p, parsetokens_t *t) { scan_sse2_impl(p, t); }
-static void scan_sse42(const char *p, parsetokens_t *t) { scan_sse2_impl(p, t); }
+//static void scan_sse42(const char *p, parsetokens_t *t) { scan_sse2_impl(p, t); }
 #endif
 
 #if defined(SIMD_AVX2)

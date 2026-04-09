@@ -343,6 +343,7 @@ void (*classify)(const char *data, size_t cursor, uint64_t *mask, unsigned *avai
 void
 zone_mask_start(const char *data, size_t cursor, size_t max,
                 uint64_t *mask, unsigned *avail) {
+    (void)max;
     /* Refill immediately at the given cursor. */
     classify(data, cursor, mask, avail);
 }
@@ -352,6 +353,7 @@ zone_mask_start(const char *data, size_t cursor, size_t max,
 size_t
 zone_mask_skip_nospace2(const char *data, size_t cursor, size_t max,
                        uint64_t *mask, unsigned *avail, size_t length) {
+    (void)max;
 
     while (length) {
         if (*avail == 0) {
@@ -583,7 +585,7 @@ int zone_atom_mask_quicktest(void)
 
             uint64_t got = 0;
             if (build_mask64_by_backend(tests[t].s, &got) != 0 || got != tests[t].expect) {
-                fprintf(stderr, "atom.mask:%d failed test 0x%016llx\n", t, got);
+                fprintf(stderr, "atom.mask:%d failed test 0x%016llx\n", t, (unsigned long long)got);
                 err++;
             }
         }

@@ -19,6 +19,7 @@
 
 
 int include_directive(zone_block_t *block, zone_workq_t *wq, unsigned depth) {
+    (void)wq;
     
     /* We only allow shallow nesting of $INCLUDE files */
     if (depth > 20) {
@@ -29,11 +30,11 @@ int include_directive(zone_block_t *block, zone_workq_t *wq, unsigned depth) {
     }
     
     /* Grab the 'filename' */
-    size_t filename_length;
-    char *filename;
+    //size_t filename_length;
+    //char *filename;
     if (block->is_include_filename_seen) {
-        filename = block->include.filename;
-        filename_length = block->include.filename_length;
+        //filename = block->include.filename;
+        //filename_length = block->include.filename_length;
         block->is_include_filename_seen = 0;
         block->include.filename = 0;
         block->include.filename_length = 0;
@@ -45,17 +46,19 @@ int include_directive(zone_block_t *block, zone_workq_t *wq, unsigned depth) {
     }
     
     /* Grab the origin, if specified */
-    size_t origin_length = 0;
-    char *origin = NULL;
+    //size_t origin_length = 0;
+    //char *origin = NULL;
     if (block->is_include_origin_seen) {
-        origin_length = block->include.origin_length;
-        origin = block->include.origin;
+        //origin_length = block->include.origin_length;
+        //origin = block->include.origin;
         block->is_include_origin_seen = 0;
         block->include.origin = 0;
         block->include.origin_length = 0;
     } else {
-        origin_length = 0;
-        origin = 0;
+        //origin_length = 0;
+        //origin = 0;
+        ;
+        /*TODO*/
     }
 
     /* Grab the TTL from the previous block */

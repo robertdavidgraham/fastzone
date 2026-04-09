@@ -1,9 +1,10 @@
+#define _POSIX_C_SOURCE 200809L
 #include "zone-scan.h"
-#include <string.h>
 #include <ctype.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _WIN32
 #define strdup _strdup
@@ -37,10 +38,12 @@ block_error(zone_block_t *block, size_t offset, size_t max, enum zone_error err)
  * end of the buffer mid parsing.
  */
 static size_t block_frag(zone_block_t *block, size_t pos, size_t len) {
+    (void)pos;
+    (void)block;
     return len + 1;
 }
 
-static int block_append(zone_block_t *block, const char *data, size_t offset, size_t next) {
+int block_append(zone_block_t *block, const char *data, size_t offset, size_t next) {
     if (block->is_full)
         return 1;
     
@@ -66,10 +69,14 @@ static int block_append(zone_block_t *block, const char *data, size_t offset, si
  * carriage-return '\r' if it existed.
  */
 int block_fix_cr(zone_block_t *block) {
+    (void)block;
     return 0;
 }
 
 int block_name_repeat(zone_block_t *block, size_t offset, size_t next) {
+    (void)next;
+    (void)offset;
+
     //static const size_t block_max = sizeof(block->buf);
     static const size_t record_max = sizeof(block->records)/sizeof(block->records[0]);
     
@@ -309,6 +316,7 @@ find_open_paren(const char *data, size_t offset, size_t max, zone_block_t *block
 }
 
 static inline size_t zone_skip_space(const  char *data, size_t pos, size_t len) {
+    (void)len;
     while (data[pos] == ' ' || data[pos] == '\t')
         pos++;
     return pos;
@@ -500,6 +508,7 @@ static size_t handle_INCLUDE(zone_block_t *block, const char *data, size_t offse
     return max + 1;
 }
 static size_t handle_GENERATE(zone_block_t *block, const char *data, size_t offset, size_t max) {
+    (void)data;
     return block_error(block, offset, max, ZONE_ERROR_DIRECTIVE_UNKNOWN);
 }
 
@@ -517,6 +526,7 @@ static int my_tolower(int c) {
  * Does the string start with a prefix like $ORIGIN or $TTL.
  */
 static inline int is_prefix(const char *lhs, const char *rhs, size_t offset, size_t max) {
+    (void)max;
     size_t i;
     for (i=0; lhs[i]; i++) {
         if (my_tolower(lhs[i]) != my_tolower(rhs[offset+i]))
@@ -663,7 +673,7 @@ again:
 
     goto again;
     
-    return cursor;
+    //return cursor;
 }
 
 size_t zone_block_fill(zone_block_t *block, const char *data, size_t offset, size_t max) {
